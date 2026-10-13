@@ -12,5 +12,5 @@ set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 # 64-bit file offsets and inode numbers: without them a 32-bit build's stat()/readdir() fail with EOVERFLOW
 # ("Value too large for defined data type") on filesystems with large inode numbers, and Surge then finds no
 # patches or wavetables (seen offline under qemu-arm on an ext4 build machine, 2026-10-13).
-set(CMAKE_C_FLAGS_INIT "-D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE")
-set(CMAKE_CXX_FLAGS_INIT "-D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE")
+set(CMAKE_C_FLAGS_INIT "-D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -funwind-tables")
+set(CMAKE_CXX_FLAGS_INIT "-D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -funwind-tables")

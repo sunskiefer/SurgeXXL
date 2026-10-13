@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.1.2
+- Q-Links in the order of your SurgeXXL Q-Link Map (qlinks.json): MIXER's mute, solo and route rows on their own
+  Q-Link pages with Ring 1x2 / 2x3 included, FILTER's types and subtypes beside their filter, the envelope shapes on
+  ENV / LFO 4, FX On and Type first on FX, the patch browser off PATCH's Q-Links (touch only).
+- Still crashing on LOAD on a Force after 0.1.1, so this version brings its own crash log: `/sdcard/SurgeXXL/surgexxl.log`
+  gets a line per instance, LOAD (and how long it took) and state restore, and, if MPC is about to go down, the
+  signal, where in the plugin it happened and the plugin's return addresses on the stack. The library keeps its symbol
+  table (no debug info) so those addresses name functions.
+- Hardening around LOAD: the load thread has an 8 MB stack and its own signal stack; no exception can leave the
+  plugin (each entry point and the load catch, log and carry on).
+
 ## 0.1.1
 - Fixed: LOAD crashed the Force ("Your Force recovered from an internal error"). Surge loads a patch on its own
   thread, and while it ran MPC read every value and value text again (the LOAD press refreshes the pages), played

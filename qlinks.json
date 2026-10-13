@@ -1,6 +1,7 @@
 {
  "plugin": "SurgeXXL",
  "format": "qlink-map 1",
+ "savedAt": "2026-10-13T18:21:12.950Z",
  "pages": {
   "osc": {
    "name": "OSC",
@@ -10,98 +11,98 @@
      "qlinkPage": 1,
      "knob": 1,
      "key": "osc_p1",
-     "name": "Osc Param 1"
+     "name": "OSC PARAM 1"
     },
     {
      "n": 2,
      "qlinkPage": 1,
      "knob": 2,
      "key": "osc_p2",
-     "name": "Osc Param 2"
+     "name": "OSC PARAM 2"
     },
     {
      "n": 3,
      "qlinkPage": 1,
      "knob": 3,
      "key": "osc_p3",
-     "name": "Osc Param 3"
+     "name": "OSC PARAM 3"
     },
     {
      "n": 4,
      "qlinkPage": 1,
      "knob": 4,
      "key": "osc_p4",
-     "name": "Osc Param 4"
+     "name": "OSC PARAM 4"
     },
     {
      "n": 5,
      "qlinkPage": 1,
      "knob": 5,
      "key": "osc_p5",
-     "name": "Osc Param 5"
+     "name": "OSC PARAM 5"
     },
     {
      "n": 6,
      "qlinkPage": 1,
      "knob": 6,
      "key": "osc_p6",
-     "name": "Osc Param 6"
+     "name": "OSC PARAM 6"
     },
     {
      "n": 7,
      "qlinkPage": 1,
      "knob": 7,
      "key": "osc_p7",
-     "name": "Osc Param 7"
+     "name": "OSC PARAM 7"
     },
     {
      "n": 8,
      "qlinkPage": 1,
      "knob": 8,
      "key": "osc_pitch",
-     "name": "Osc Pitch"
+     "name": "OSC PITCH"
     },
     {
      "n": 9,
      "qlinkPage": 2,
      "knob": 1,
      "key": "wt",
-     "name": "Wavetable"
+     "name": "WAVETABLE"
     },
     {
      "n": 10,
      "qlinkPage": 2,
      "knob": 2,
      "key": "osc_octave",
-     "name": "Osc Octave"
+     "name": "OSC OCTAVE"
     },
     {
      "n": 11,
      "qlinkPage": 2,
      "knob": 3,
      "key": "osc_type",
-     "name": "Osc Type"
+     "name": "OSC TYPE"
     },
     {
      "n": 12,
      "qlinkPage": 2,
      "knob": 4,
      "key": "osc_sel",
-     "name": "Oscillator"
+     "name": "OSCILLATOR"
     },
     {
      "n": 13,
      "qlinkPage": 2,
      "knob": 5,
      "key": "osc_keytrack",
-     "name": "Osc Keytrack"
+     "name": "OSC KEYTRACK"
     },
     {
      "n": 14,
      "qlinkPage": 2,
      "knob": 6,
      "key": "osc_retrig",
-     "name": "Osc Retrigger"
+     "name": "OSC RETRIGGER"
     }
    ]
   },
@@ -113,168 +114,252 @@
      "qlinkPage": 1,
      "knob": 1,
      "key": "mix_o1",
-     "name": "Osc 1 Level"
+     "name": "OSC 1 LEVEL"
     },
     {
      "n": 2,
      "qlinkPage": 1,
      "knob": 2,
      "key": "mix_o2",
-     "name": "Osc 2 Level"
+     "name": "OSC 2 LEVEL"
     },
     {
      "n": 3,
      "qlinkPage": 1,
      "knob": 3,
      "key": "mix_o3",
-     "name": "Osc 3 Level"
+     "name": "OSC 3 LEVEL"
     },
     {
      "n": 4,
      "qlinkPage": 1,
      "knob": 4,
      "key": "mix_noise",
-     "name": "Noise Level"
+     "name": "NOISE LEVEL"
     },
     {
      "n": 5,
      "qlinkPage": 1,
      "knob": 5,
      "key": "mix_r12",
-     "name": "Ring 1x2 Level"
+     "name": "RING 1X2 LEVEL"
     },
     {
      "n": 6,
      "qlinkPage": 1,
      "knob": 6,
      "key": "mix_r23",
-     "name": "Ring 2x3 Level"
+     "name": "RING 2X3 LEVEL"
     },
     {
      "n": 7,
      "qlinkPage": 1,
      "knob": 7,
      "key": "mix_pfg",
-     "name": "Pre-Filter Gain"
+     "name": "PRE-FILTER GAIN"
     },
     {
      "n": 8,
      "qlinkPage": 1,
      "knob": 8,
      "key": "sc_volume",
-     "name": "Scene Volume"
+     "name": "SCENE VOLUME"
     },
     {
      "n": 9,
      "qlinkPage": 2,
      "knob": 1,
-     "key": "fm_depth",
-     "name": "FM Depth"
+     "key": null,
+     "name": null
     },
     {
      "n": 10,
      "qlinkPage": 2,
      "knob": 2,
-     "key": "noise_color",
-     "name": "Noise Color"
+     "key": "mute_o1",
+     "name": "OSC 1 MUTE"
     },
     {
      "n": 11,
      "qlinkPage": 2,
      "knob": 3,
-     "key": "osc_drift",
-     "name": "Osc Drift"
+     "key": "mute_o2",
+     "name": "OSC 2 MUTE"
     },
     {
      "n": 12,
      "qlinkPage": 2,
      "knob": 4,
-     "key": "sc_pan",
-     "name": "Scene Pan"
+     "key": "mute_o3",
+     "name": "OSC 3 MUTE"
     },
     {
      "n": 13,
      "qlinkPage": 2,
      "knob": 5,
-     "key": "sc_width",
-     "name": "Scene Width"
+     "key": "mute_r12",
+     "name": "RING 1X2 MUTE"
     },
     {
      "n": 14,
      "qlinkPage": 2,
      "knob": 6,
-     "key": "fm_routing",
-     "name": "FM Routing"
+     "key": "mute_r23",
+     "name": "RING 2X3 MUTE"
     },
     {
      "n": 15,
      "qlinkPage": 2,
      "knob": 7,
-     "key": "route_o1",
-     "name": "Osc 1 Route"
+     "key": "mute_noise",
+     "name": "NOISE MUTE"
     },
     {
      "n": 16,
      "qlinkPage": 2,
      "knob": 8,
-     "key": "route_o2",
-     "name": "Osc 2 Route"
+     "key": null,
+     "name": null
     },
     {
      "n": 17,
      "qlinkPage": 3,
      "knob": 1,
-     "key": "mute_o1",
-     "name": "Osc 1 Mute"
+     "key": null,
+     "name": null
     },
     {
      "n": 18,
      "qlinkPage": 3,
      "knob": 2,
-     "key": "mute_o2",
-     "name": "Osc 2 Mute"
+     "key": "solo_o1",
+     "name": "OSC 1 SOLO"
     },
     {
      "n": 19,
      "qlinkPage": 3,
      "knob": 3,
-     "key": "mute_o3",
-     "name": "Osc 3 Mute"
+     "key": "solo_o2",
+     "name": "OSC 2 SOLO"
     },
     {
      "n": 20,
      "qlinkPage": 3,
      "knob": 4,
-     "key": "mute_noise",
-     "name": "Noise Mute"
+     "key": "solo_o3",
+     "name": "OSC 3 SOLO"
     },
     {
      "n": 21,
      "qlinkPage": 3,
      "knob": 5,
-     "key": "solo_o1",
-     "name": "Osc 1 Solo"
+     "key": "solo_r12",
+     "name": "RING 1X2 SOLO"
     },
     {
      "n": 22,
      "qlinkPage": 3,
      "knob": 6,
-     "key": "solo_o2",
-     "name": "Osc 2 Solo"
+     "key": "solo_r23",
+     "name": "RING 2X3 SOLO"
     },
     {
      "n": 23,
      "qlinkPage": 3,
      "knob": 7,
-     "key": "solo_o3",
-     "name": "Osc 3 Solo"
+     "key": "solo_noise",
+     "name": "NOISE SOLO"
     },
     {
      "n": 24,
      "qlinkPage": 3,
      "knob": 8,
-     "key": "solo_noise",
-     "name": "Noise Solo"
+     "key": null,
+     "name": null
+    },
+    {
+     "n": 25,
+     "qlinkPage": 4,
+     "knob": 1,
+     "key": "sc_pan",
+     "name": "SCENE PAN"
+    },
+    {
+     "n": 26,
+     "qlinkPage": 4,
+     "knob": 2,
+     "key": "sc_width",
+     "name": "SCENE WIDTH"
+    },
+    {
+     "n": 27,
+     "qlinkPage": 4,
+     "knob": 3,
+     "key": "route_o1",
+     "name": "OSC 1 ROUTE"
+    },
+    {
+     "n": 28,
+     "qlinkPage": 4,
+     "knob": 4,
+     "key": "route_o2",
+     "name": "OSC 2 ROUTE"
+    },
+    {
+     "n": 29,
+     "qlinkPage": 4,
+     "knob": 5,
+     "key": "route_o3",
+     "name": "OSC 3 ROUTE"
+    },
+    {
+     "n": 30,
+     "qlinkPage": 4,
+     "knob": 6,
+     "key": "route_r12",
+     "name": "RING 1X2 ROUTE"
+    },
+    {
+     "n": 31,
+     "qlinkPage": 4,
+     "knob": 7,
+     "key": "route_r23",
+     "name": "RING 2X3 ROUTE"
+    },
+    {
+     "n": 32,
+     "qlinkPage": 4,
+     "knob": 8,
+     "key": "route_noise",
+     "name": "NOISE ROUTE"
+    },
+    {
+     "n": 33,
+     "qlinkPage": 5,
+     "knob": 1,
+     "key": "fm_routing",
+     "name": "FM ROUTING"
+    },
+    {
+     "n": 34,
+     "qlinkPage": 5,
+     "knob": 2,
+     "key": "fm_depth",
+     "name": "FM DEPTH"
+    },
+    {
+     "n": 35,
+     "qlinkPage": 5,
+     "knob": 3,
+     "key": "noise_color",
+     "name": "NOISE COLOR"
+    },
+    {
+     "n": 36,
+     "qlinkPage": 5,
+     "knob": 4,
+     "key": "osc_drift",
+     "name": "OSC DRIFT"
     }
    ]
   },
@@ -286,126 +371,133 @@
      "qlinkPage": 1,
      "knob": 1,
      "key": "f1_cutoff",
-     "name": "Filter 1 Cutoff"
+     "name": "FILTER 1 CUTOFF"
     },
     {
      "n": 2,
      "qlinkPage": 1,
      "knob": 2,
      "key": "f1_res",
-     "name": "Filter 1 Resonance"
+     "name": "FILTER 1 RESONANCE"
     },
     {
      "n": 3,
      "qlinkPage": 1,
      "knob": 3,
      "key": "f1_env",
-     "name": "Filter 1 FEG Amount"
+     "name": "FILTER 1 FEG AMOUNT"
     },
     {
      "n": 4,
      "qlinkPage": 1,
      "knob": 4,
      "key": "f1_ktrk",
-     "name": "Filter 1 Keytrack"
+     "name": "FILTER 1 KEYTRACK"
     },
     {
      "n": 5,
      "qlinkPage": 1,
      "knob": 5,
      "key": "f2_cutoff",
-     "name": "Filter 2 Cutoff"
+     "name": "FILTER 2 CUTOFF"
     },
     {
      "n": 6,
      "qlinkPage": 1,
      "knob": 6,
      "key": "f2_res",
-     "name": "Filter 2 Resonance"
+     "name": "FILTER 2 RESONANCE"
     },
     {
      "n": 7,
      "qlinkPage": 1,
      "knob": 7,
      "key": "f2_env",
-     "name": "Filter 2 FEG Amount"
+     "name": "FILTER 2 FEG AMOUNT"
     },
     {
      "n": 8,
      "qlinkPage": 1,
      "knob": 8,
      "key": "f2_ktrk",
-     "name": "Filter 2 Keytrack"
+     "name": "FILTER 2 KEYTRACK"
     },
     {
      "n": 9,
      "qlinkPage": 2,
      "knob": 1,
-     "key": "feedback",
-     "name": "Feedback"
+     "key": "f1_type",
+     "name": "FILTER 1 TYPE"
     },
     {
      "n": 10,
      "qlinkPage": 2,
      "knob": 2,
-     "key": "f_balance",
-     "name": "Filter Balance"
+     "key": "f1_subtype",
+     "name": "FILTER 1 SUBTYPE"
     },
     {
      "n": 11,
      "qlinkPage": 2,
      "knob": 3,
-     "key": "highpass",
-     "name": "Highpass"
+     "key": "feedback",
+     "name": "FEEDBACK"
     },
     {
      "n": 12,
      "qlinkPage": 2,
      "knob": 4,
-     "key": "ws_drive",
-     "name": "Waveshaper Drive"
+     "key": "f_balance",
+     "name": "FILTER BALANCE"
     },
     {
      "n": 13,
      "qlinkPage": 2,
      "knob": 5,
-     "key": "f1_type",
-     "name": "Filter 1 Type"
+     "key": "highpass",
+     "name": "HIGHPASS"
     },
     {
      "n": 14,
      "qlinkPage": 2,
      "knob": 6,
      "key": "f2_type",
-     "name": "Filter 2 Type"
+     "name": "FILTER 2 TYPE"
     },
     {
      "n": 15,
      "qlinkPage": 2,
      "knob": 7,
-     "key": "ws_type",
-     "name": "Waveshaper Type"
+     "key": "f2_subtype",
+     "name": "FILTER 2 SUBTYPE"
     },
     {
      "n": 16,
      "qlinkPage": 2,
      "knob": 8,
-     "key": "fb_config",
-     "name": "Filter Config"
+     "key": null,
+     "name": null
     },
     {
      "n": 17,
      "qlinkPage": 3,
      "knob": 1,
-     "key": "f1_subtype",
-     "name": "Filter 1 Subtype"
+     "key": "fb_config",
+     "name": "FILTER CONFIG"
     },
     {
      "n": 18,
      "qlinkPage": 3,
      "knob": 2,
-     "key": "f2_subtype",
-     "name": "Filter 2 Subtype"
+     "key": "ws_type",
+     "name": "WAVESHAPER TYPE"
+    },
+    {
+     "n": 19,
+     "qlinkPage": 3,
+     "knob": 3,
+     "key": "ws_drive",
+     "name": "WAVESHAPER DRIVE"
     }
    ]
   },
@@ -417,91 +509,91 @@
      "qlinkPage": 1,
      "knob": 1,
      "key": "aeg_a",
-     "name": "Amp EG Attack"
+     "name": "AMP EG ATTACK"
     },
     {
      "n": 2,
      "qlinkPage": 1,
      "knob": 2,
      "key": "aeg_d",
-     "name": "Amp EG Decay"
+     "name": "AMP EG DECAY"
     },
     {
      "n": 3,
      "qlinkPage": 1,
      "knob": 3,
      "key": "aeg_s",
-     "name": "Amp EG Sustain"
+     "name": "AMP EG SUSTAIN"
     },
     {
      "n": 4,
      "qlinkPage": 1,
      "knob": 4,
      "key": "aeg_r",
-     "name": "Amp EG Release"
+     "name": "AMP EG RELEASE"
     },
     {
      "n": 5,
      "qlinkPage": 1,
      "knob": 5,
      "key": "feg_a",
-     "name": "Filter EG Attack"
+     "name": "FILTER EG ATTACK"
     },
     {
      "n": 6,
      "qlinkPage": 1,
      "knob": 6,
      "key": "feg_d",
-     "name": "Filter EG Decay"
+     "name": "FILTER EG DECAY"
     },
     {
      "n": 7,
      "qlinkPage": 1,
      "knob": 7,
      "key": "feg_s",
-     "name": "Filter EG Sustain"
+     "name": "FILTER EG SUSTAIN"
     },
     {
      "n": 8,
      "qlinkPage": 1,
      "knob": 8,
      "key": "feg_r",
-     "name": "Filter EG Release"
+     "name": "FILTER EG RELEASE"
     },
     {
      "n": 9,
      "qlinkPage": 2,
      "knob": 1,
      "key": "lfo_rate",
-     "name": "LFO Rate"
+     "name": "LFO RATE"
     },
     {
      "n": 10,
      "qlinkPage": 2,
      "knob": 2,
      "key": "lfo_phase",
-     "name": "LFO Phase"
+     "name": "LFO PHASE"
     },
     {
      "n": 11,
      "qlinkPage": 2,
      "knob": 3,
      "key": "lfo_amp",
-     "name": "LFO Amplitude"
+     "name": "LFO AMPLITUDE"
     },
     {
      "n": 12,
      "qlinkPage": 2,
      "knob": 4,
      "key": "lfo_deform",
-     "name": "LFO Deform"
+     "name": "LFO DEFORM"
     },
     {
      "n": 13,
      "qlinkPage": 2,
      "knob": 5,
      "key": "lfo_shape",
-     "name": "LFO Shape"
+     "name": "LFO SHAPE"
     },
     {
      "n": 14,
@@ -515,70 +607,126 @@
      "qlinkPage": 2,
      "knob": 7,
      "key": "lfo_trig",
-     "name": "LFO Trigger"
+     "name": "LFO TRIGGER"
     },
     {
      "n": 16,
      "qlinkPage": 2,
      "knob": 8,
      "key": "lfo_uni",
-     "name": "LFO Unipolar"
+     "name": "LFO UNIPOLAR"
     },
     {
      "n": 17,
      "qlinkPage": 3,
      "knob": 1,
      "key": "lfo_delay",
-     "name": "LFO EG Delay"
+     "name": "LFO EG DELAY"
     },
     {
      "n": 18,
      "qlinkPage": 3,
      "knob": 2,
      "key": "lfo_attack",
-     "name": "LFO EG Attack"
+     "name": "LFO EG ATTACK"
     },
     {
      "n": 19,
      "qlinkPage": 3,
      "knob": 3,
      "key": "lfo_hold",
-     "name": "LFO EG Hold"
+     "name": "LFO EG HOLD"
     },
     {
      "n": 20,
      "qlinkPage": 3,
      "knob": 4,
      "key": "lfo_decay",
-     "name": "LFO EG Decay"
+     "name": "LFO EG DECAY"
     },
     {
      "n": 21,
      "qlinkPage": 3,
      "knob": 5,
      "key": "lfo_sustain",
-     "name": "LFO EG Sustain"
+     "name": "LFO EG SUSTAIN"
     },
     {
      "n": 22,
      "qlinkPage": 3,
      "knob": 6,
      "key": "lfo_release",
-     "name": "LFO EG Release"
+     "name": "LFO EG RELEASE"
     },
     {
      "n": 23,
      "qlinkPage": 3,
      "knob": 7,
      "key": "aeg_mode",
-     "name": "Amp EG Mode"
+     "name": "AMP EG MODE"
     },
     {
      "n": 24,
      "qlinkPage": 3,
      "knob": 8,
      "key": "feg_mode",
-     "name": "Filter EG Mode"
+     "name": "FILTER EG MODE"
+    },
+    {
+     "n": 25,
+     "qlinkPage": 4,
+     "knob": 1,
+     "key": "aeg_ash",
+     "name": "AMP EG ATTACK SHAPE"
+    },
+    {
+     "n": 26,
+     "qlinkPage": 4,
+     "knob": 2,
+     "key": "aeg_dsh",
+     "name": "AMP EG DECAY SHAPE"
+    },
+    {
+     "n": 27,
+     "qlinkPage": 4,
+     "knob": 3,
+     "key": "aeg_rsh",
+     "name": "AMP EG RELEASE SHAPE"
+    },
+    {
+     "n": 28,
+     "qlinkPage": 4,
+     "knob": 4,
+     "key": "feg_ash",
+     "name": "FILTER EG ATTACK SHAPE"
+    },
+    {
+     "n": 29,
+     "qlinkPage": 4,
+     "knob": 5,
+     "key": "feg_dsh",
+     "name": "FILTER EG DECAY SHAPE"
+    },
+    {
+     "n": 30,
+     "qlinkPage": 4,
+     "knob": 6,
+     "key": "feg_rsh",
+     "name": "FILTER EG RELEASE SHAPE"
+    },
+    {
+     "n": 31,
+     "qlinkPage": 4,
+     "knob": 7,
+     "key": null,
+     "name": null
+    },
+    {
+     "n": 32,
+     "qlinkPage": 4,
+     "knob": 8,
+     "key": null,
+     "name": null
     }
    ]
   },
@@ -590,126 +738,126 @@
      "qlinkPage": 1,
      "knob": 1,
      "key": "seq_1",
-     "name": "Step 1"
+     "name": "STEP 1"
     },
     {
      "n": 2,
      "qlinkPage": 1,
      "knob": 2,
      "key": "seq_2",
-     "name": "Step 2"
+     "name": "STEP 2"
     },
     {
      "n": 3,
      "qlinkPage": 1,
      "knob": 3,
      "key": "seq_3",
-     "name": "Step 3"
+     "name": "STEP 3"
     },
     {
      "n": 4,
      "qlinkPage": 1,
      "knob": 4,
      "key": "seq_4",
-     "name": "Step 4"
+     "name": "STEP 4"
     },
     {
      "n": 5,
      "qlinkPage": 1,
      "knob": 5,
      "key": "seq_5",
-     "name": "Step 5"
+     "name": "STEP 5"
     },
     {
      "n": 6,
      "qlinkPage": 1,
      "knob": 6,
      "key": "seq_6",
-     "name": "Step 6"
+     "name": "STEP 6"
     },
     {
      "n": 7,
      "qlinkPage": 1,
      "knob": 7,
      "key": "seq_7",
-     "name": "Step 7"
+     "name": "STEP 7"
     },
     {
      "n": 8,
      "qlinkPage": 1,
      "knob": 8,
      "key": "seq_8",
-     "name": "Step 8"
+     "name": "STEP 8"
     },
     {
      "n": 9,
      "qlinkPage": 2,
      "knob": 1,
      "key": "seq_9",
-     "name": "Step 9"
+     "name": "STEP 9"
     },
     {
      "n": 10,
      "qlinkPage": 2,
      "knob": 2,
      "key": "seq_10",
-     "name": "Step 10"
+     "name": "STEP 10"
     },
     {
      "n": 11,
      "qlinkPage": 2,
      "knob": 3,
      "key": "seq_11",
-     "name": "Step 11"
+     "name": "STEP 11"
     },
     {
      "n": 12,
      "qlinkPage": 2,
      "knob": 4,
      "key": "seq_12",
-     "name": "Step 12"
+     "name": "STEP 12"
     },
     {
      "n": 13,
      "qlinkPage": 2,
      "knob": 5,
      "key": "seq_13",
-     "name": "Step 13"
+     "name": "STEP 13"
     },
     {
      "n": 14,
      "qlinkPage": 2,
      "knob": 6,
      "key": "seq_14",
-     "name": "Step 14"
+     "name": "STEP 14"
     },
     {
      "n": 15,
      "qlinkPage": 2,
      "knob": 7,
      "key": "seq_15",
-     "name": "Step 15"
+     "name": "STEP 15"
     },
     {
      "n": 16,
      "qlinkPage": 2,
      "knob": 8,
      "key": "seq_16",
-     "name": "Step 16"
+     "name": "STEP 16"
     },
     {
      "n": 17,
      "qlinkPage": 3,
      "knob": 1,
      "key": "seq_start",
-     "name": "Loop Start"
+     "name": "LOOP START"
     },
     {
      "n": 18,
      "qlinkPage": 3,
      "knob": 2,
      "key": "seq_end",
-     "name": "Loop End"
+     "name": "LOOP END"
     },
     {
      "n": 19,
@@ -728,28 +876,28 @@
      "qlinkPage": 1,
      "knob": 1,
      "key": "mod_depth",
-     "name": "Mod Depth"
+     "name": "MOD DEPTH"
     },
     {
      "n": 2,
      "qlinkPage": 1,
      "knob": 2,
      "key": "mod_slot",
-     "name": "Mod Slot"
+     "name": "MOD SLOT"
     },
     {
      "n": 3,
      "qlinkPage": 1,
      "knob": 3,
      "key": "mod_src",
-     "name": "Mod Source"
+     "name": "MOD SOURCE"
     },
     {
      "n": 4,
      "qlinkPage": 1,
      "knob": 4,
      "key": "scene",
-     "name": "Edit Scene"
+     "name": "EDIT SCENE"
     }
    ]
   },
@@ -760,169 +908,225 @@
      "n": 1,
      "qlinkPage": 1,
      "knob": 1,
-     "key": "fx_p1",
-     "name": "FX Param 1"
+     "key": "fx_on",
+     "name": "FX ON"
     },
     {
      "n": 2,
      "qlinkPage": 1,
      "knob": 2,
-     "key": "fx_p2",
-     "name": "FX Param 2"
+     "key": "fx_type",
+     "name": "FX TYPE"
     },
     {
      "n": 3,
      "qlinkPage": 1,
      "knob": 3,
-     "key": "fx_p3",
-     "name": "FX Param 3"
+     "key": "fx_p1",
+     "name": "FX PARAM 1"
     },
     {
      "n": 4,
      "qlinkPage": 1,
      "knob": 4,
-     "key": "fx_p4",
-     "name": "FX Param 4"
+     "key": "fx_p2",
+     "name": "FX PARAM 2"
     },
     {
      "n": 5,
      "qlinkPage": 1,
      "knob": 5,
-     "key": "fx_p5",
-     "name": "FX Param 5"
+     "key": "fx_p3",
+     "name": "FX PARAM 3"
     },
     {
      "n": 6,
      "qlinkPage": 1,
      "knob": 6,
-     "key": "fx_p6",
-     "name": "FX Param 6"
+     "key": "fx_p4",
+     "name": "FX PARAM 4"
     },
     {
      "n": 7,
      "qlinkPage": 1,
      "knob": 7,
-     "key": "fx_p7",
-     "name": "FX Param 7"
+     "key": "fx_p5",
+     "name": "FX PARAM 5"
     },
     {
      "n": 8,
      "qlinkPage": 1,
      "knob": 8,
-     "key": "fx_p8",
-     "name": "FX Param 8"
+     "key": "fx_p6",
+     "name": "FX PARAM 6"
     },
     {
      "n": 9,
      "qlinkPage": 2,
      "knob": 1,
-     "key": "fx_p9",
-     "name": "FX Param 9"
+     "key": "fx_bypass",
+     "name": "FX CHAIN"
     },
     {
      "n": 10,
      "qlinkPage": 2,
      "knob": 2,
-     "key": "fx_p10",
-     "name": "FX Param 10"
+     "key": "fx_sel",
+     "name": "FX SLOT"
     },
     {
      "n": 11,
      "qlinkPage": 2,
      "knob": 3,
-     "key": "fx_p11",
-     "name": "FX Param 11"
+     "key": "fx_p7",
+     "name": "FX PARAM 7"
     },
     {
      "n": 12,
      "qlinkPage": 2,
      "knob": 4,
-     "key": "fx_p12",
-     "name": "FX Param 12"
+     "key": "fx_p8",
+     "name": "FX PARAM 8"
     },
     {
      "n": 13,
      "qlinkPage": 2,
      "knob": 5,
-     "key": "fx_type",
-     "name": "FX Type"
+     "key": "fx_p9",
+     "name": "FX PARAM 9"
     },
     {
      "n": 14,
      "qlinkPage": 2,
      "knob": 6,
-     "key": "fx_sel",
-     "name": "FX Slot"
+     "key": "fx_p10",
+     "name": "FX PARAM 10"
     },
     {
      "n": 15,
      "qlinkPage": 2,
      "knob": 7,
-     "key": "fx_on",
-     "name": "FX On"
+     "key": "fx_p11",
+     "name": "FX PARAM 11"
     },
     {
      "n": 16,
      "qlinkPage": 2,
      "knob": 8,
-     "key": "fx_bypass",
-     "name": "FX Chain"
+     "key": "fx_p12",
+     "name": "FX PARAM 12"
     },
     {
      "n": 17,
      "qlinkPage": 3,
      "knob": 1,
      "key": "send_1",
-     "name": "Send 1"
+     "name": "SEND 1"
     },
     {
      "n": 18,
      "qlinkPage": 3,
      "knob": 2,
      "key": "send_2",
-     "name": "Send 2"
+     "name": "SEND 2"
     },
     {
      "n": 19,
      "qlinkPage": 3,
      "knob": 3,
      "key": "send_3",
-     "name": "Send 3"
+     "name": "SEND 3"
     },
     {
      "n": 20,
      "qlinkPage": 3,
      "knob": 4,
      "key": "send_4",
-     "name": "Send 4"
+     "name": "SEND 4"
     },
     {
      "n": 21,
      "qlinkPage": 3,
      "knob": 5,
      "key": "ret_1",
-     "name": "Return 1"
+     "name": "RETURN 1"
     },
     {
      "n": 22,
      "qlinkPage": 3,
      "knob": 6,
      "key": "ret_2",
-     "name": "Return 2"
+     "name": "RETURN 2"
     },
     {
      "n": 23,
      "qlinkPage": 3,
      "knob": 7,
      "key": "ret_3",
-     "name": "Return 3"
+     "name": "RETURN 3"
     },
     {
      "n": 24,
      "qlinkPage": 3,
      "knob": 8,
      "key": "ret_4",
-     "name": "Return 4"
+     "name": "RETURN 4"
+    },
+    {
+     "n": 25,
+     "qlinkPage": 4,
+     "knob": 1,
+     "key": null,
+     "name": null
+    },
+    {
+     "n": 26,
+     "qlinkPage": 4,
+     "knob": 2,
+     "key": null,
+     "name": null
+    },
+    {
+     "n": 27,
+     "qlinkPage": 4,
+     "knob": 3,
+     "key": null,
+     "name": null
+    },
+    {
+     "n": 28,
+     "qlinkPage": 4,
+     "knob": 4,
+     "key": null,
+     "name": null
+    },
+    {
+     "n": 29,
+     "qlinkPage": 4,
+     "knob": 5,
+     "key": null,
+     "name": null
+    },
+    {
+     "n": 30,
+     "qlinkPage": 4,
+     "knob": 6,
+     "key": null,
+     "name": null
+    },
+    {
+     "n": 31,
+     "qlinkPage": 4,
+     "knob": 7,
+     "key": null,
+     "name": null
+    },
+    {
+     "n": 32,
+     "qlinkPage": 4,
+     "knob": 8,
+     "key": null,
+     "name": null
     }
    ]
   },
@@ -934,126 +1138,119 @@
      "qlinkPage": 1,
      "knob": 1,
      "key": "macro_1",
-     "name": "Macro 1"
+     "name": "MACRO 1"
     },
     {
      "n": 2,
      "qlinkPage": 1,
      "knob": 2,
      "key": "macro_2",
-     "name": "Macro 2"
+     "name": "MACRO 2"
     },
     {
      "n": 3,
      "qlinkPage": 1,
      "knob": 3,
      "key": "macro_3",
-     "name": "Macro 3"
+     "name": "MACRO 3"
     },
     {
      "n": 4,
      "qlinkPage": 1,
      "knob": 4,
      "key": "macro_4",
-     "name": "Macro 4"
+     "name": "MACRO 4"
     },
     {
      "n": 5,
      "qlinkPage": 1,
      "knob": 5,
      "key": "macro_5",
-     "name": "Macro 5"
+     "name": "MACRO 5"
     },
     {
      "n": 6,
      "qlinkPage": 1,
      "knob": 6,
      "key": "macro_6",
-     "name": "Macro 6"
+     "name": "MACRO 6"
     },
     {
      "n": 7,
      "qlinkPage": 1,
      "knob": 7,
      "key": "macro_7",
-     "name": "Macro 7"
+     "name": "MACRO 7"
     },
     {
      "n": 8,
      "qlinkPage": 1,
      "knob": 8,
      "key": "macro_8",
-     "name": "Macro 8"
+     "name": "MACRO 8"
     },
     {
      "n": 9,
      "qlinkPage": 2,
      "knob": 1,
-     "key": "patch",
-     "name": "Patch"
+     "key": "volume",
+     "name": "VOLUME"
     },
     {
      "n": 10,
      "qlinkPage": 2,
      "knob": 2,
-     "key": "volume",
-     "name": "Volume"
+     "key": "poly_limit",
+     "name": "POLY LIMIT"
     },
     {
      "n": 11,
      "qlinkPage": 2,
      "knob": 3,
-     "key": "poly_limit",
-     "name": "Poly Limit"
+     "key": "portamento",
+     "name": "PORTAMENTO"
     },
     {
      "n": 12,
      "qlinkPage": 2,
      "knob": 4,
-     "key": "portamento",
-     "name": "Portamento"
+     "key": "bend_up",
+     "name": "BEND UP"
     },
     {
      "n": 13,
      "qlinkPage": 2,
      "knob": 5,
-     "key": "bend_up",
-     "name": "Bend Up"
+     "key": "bend_dn",
+     "name": "BEND DOWN"
     },
     {
      "n": 14,
      "qlinkPage": 2,
      "knob": 6,
-     "key": "bend_dn",
-     "name": "Bend Down"
+     "key": "play_mode",
+     "name": "PLAY MODE"
     },
     {
      "n": 15,
      "qlinkPage": 2,
      "knob": 7,
-     "key": "play_mode",
-     "name": "Play Mode"
+     "key": "scene",
+     "name": "EDIT SCENE"
     },
     {
      "n": 16,
      "qlinkPage": 2,
      "knob": 8,
-     "key": "scene",
-     "name": "Edit Scene"
+     "key": "scene_mode",
+     "name": "SCENE MODE"
     },
     {
      "n": 17,
      "qlinkPage": 3,
      "knob": 1,
-     "key": "scene_mode",
-     "name": "Scene Mode"
-    },
-    {
-     "n": 18,
-     "qlinkPage": 3,
-     "knob": 2,
      "key": "split_key",
-     "name": "Split Point"
+     "name": "SPLIT POINT"
     }
    ]
   }

@@ -1,0 +1,11 @@
+#!/bin/sh
+# Drop the debug sections from the plugin but keep its symbol table (the crash log, src/diag.h, names functions by it).
+# zig's own objcopy can't do this for 32-bit ARM yet: llvm-objcopy (any version), else binutils' objcopy.
+set -e
+for t in llvm-objcopy $(ls /usr/bin/llvm-objcopy-* 2>/dev/null | sort -V -r) arm-linux-gnueabihf-objcopy objcopy; do
+  if command -v "$t" >/dev/null 2>&1; then
+    "$t" --strip-debug "$1" "$1.tmp" && mv "$1.tmp" "$1" && exit 0
+  fi
+done
+echo "zstrip: no objcopy that can strip $1" >&2
+exit 1

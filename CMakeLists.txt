@@ -32,7 +32,9 @@ set_source_files_properties(${SXXL_GEN}/vst2_wrap.c PROPERTIES COMPILE_OPTIONS "
 if(CMAKE_CROSSCOMPILING)
   file(WRITE ${CMAKE_BINARY_DIR}/exports.map "{\n  global: VSTPluginMain;\n  local: *;\n};\n")
   target_link_options(surgexxl PRIVATE -Wl,--no-undefined -Wl,--version-script=${CMAKE_BINARY_DIR}/exports.map
-                      -Wl,--gc-sections -Wl,-s)
+                      -Wl,--gc-sections)
+  # debug sections dropped, the symbol table kept: the crash log (src/diag.h) names functions by offset
+  add_custom_command(TARGET surgexxl POST_BUILD COMMAND ${CMAKE_SOURCE_DIR}/tools/zig/zstrip $<TARGET_FILE:surgexxl>)
   target_compile_options(surgexxl PRIVATE -ffunction-sections -fdata-sections)
 endif()
 

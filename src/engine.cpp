@@ -30,7 +30,8 @@
 #include <algorithm>
 #include <atomic>
 #include <string>
-#include <thread>
+#include <pthread.h>
+#include <chrono>
 #include <unordered_map>
 #include <vector>
 
@@ -39,6 +40,7 @@
 #include "dsp/Effect.h"
 
 #include "denormals.h"
+#include "diag.h"
 #include "limiter.h"
 #include "param_ids.h"
 
@@ -69,6 +71,7 @@ const char *kWtPictures[] = {
 const int kNumWtPictures = sizeof(kWtPictures) / sizeof(kWtPictures[0]);
 
 const float kSampleRate = 44100.0f;
+const char *const kVersion = "0.1.2";
 const uint64_t kGestureFrames = 15435;   // 0.35 s: trigger sets closer than this are one Q-Link turn
 const int kRemovedFx[] = {27};           // Spring Reverb (Surge's fx type number)
 const char *kSlotNames[n_fx_slots] = {"A1", "A2", "A3", "A4", "B1", "B2", "B3", "B4",
@@ -142,7 +145,9 @@ struct Inst : public SurgeSynthesizer::PluginLayer {
   // loadDone. (Surge's own patch-load thread let the host's reads, notes and Q-Links run into the half-loaded patch:
   // a Force crashed on LOAD, 2026-10-13; test/engine_test.cpp testLoadWhileHostReads under ThreadSanitizer.)
   bool loading = false;
-  std::thread loader;
+  pthread_t loader;
+  bool loaderRunning = false;
+  int loadId = -1;
   std::atomic<bool> loadDone{false};
   std::unordered_map<std::string, std::string> textCache;
   int modSlot = 0;                      // 0-based; == count: a new routing
@@ -213,6 +218,9 @@ struct Inst : public SurgeSynthesizer::PluginLayer {
     }
     userDir = (up.empty() ? std::string(".") : up) + "/SurgeXXL";
     surgeXXLUserDataPath() = userDir;
+    sxxl::Diag::get().open(userDir);
+    sxxl::Diag::get().install();
+    sxxl::Diag::get().log("SurgeXXL %s: new instance, data %s", kVersion, data.c_str());
     synth = new SurgeSynthesizer(this, data);
     synth->setSamplerate(kSampleRate);
     synth->time_data.tempo = 120;
@@ -222,6 +230,7 @@ struct Inst : public SurgeSynthesizer::PluginLayer {
     makeOrders();
     lim.Init();
     for (int i = 0; i < P_COUNT; ++i) trigLast[i] = 0, trigAt[i] = 0;
+    sxxl::Diag::get().log("ready: %d patches, %d wavetables", numPatches(), (int)wtOrder.size());
     return true;
   }
 
@@ -243,7 +252,7 @@ struct Inst : public SurgeSynthesizer::PluginLayer {
 
   ~Inst() {
     if (synth) {
-      if (loader.joinable()) loader.join();     // a load in flight finishes first
+      joinLoader();                             // a load in flight finishes first
       delete synth;
     }
   }
@@ -281,21 +290,50 @@ struct Inst : public SurgeSynthesizer::PluginLayer {
     if (id < 0 || loading) return;
     loadedPath = synth->storage.patch_list[id].path.generic_string();
     loadedName = synth->storage.patch_list[id].name;
-    if (loader.joinable()) loader.join();
+    joinLoader();
     loading = true;
     loadDone = false;
-    loader = std::thread([this, id] {
-      synth->stopSound();
-      synth->loadPatch(id);
-      synth->storage.getPatch().isDirty = false;
-      loadDone = true;
-    });
+    loadId = id;
+    sxxl::Diag::get().log("LOAD %d: %s", id, loadedPath.c_str());
+    // our own thread with a known 8 MB stack (a host may run with a small default) and its own signal stack
+    pthread_attr_t at;
+    pthread_attr_init(&at);
+    pthread_attr_setstacksize(&at, 8 * 1024 * 1024);
+    loaderRunning = pthread_create(&loader, &at, loaderMain, this) == 0;
+    pthread_attr_destroy(&at);
+    if (!loaderRunning) {
+      sxxl::Diag::get().log("LOAD: no thread, loading in place");
+      loaderBody();
+    }
     bump();
+  }
+  static void *loaderMain(void *self) {
+    sxxl::Diag::altStack();
+    ((Inst *)self)->loaderBody();
+    return nullptr;
+  }
+  void loaderBody() {
+    auto t0 = std::chrono::steady_clock::now();
+    try {
+      synth->stopSound();
+      synth->loadPatch(loadId);
+      synth->storage.getPatch().isDirty = false;
+    } catch (const std::exception &e) {
+      sxxl::Diag::get().log("LOAD %d: exception %s", loadId, e.what());
+    } catch (...) {
+      sxxl::Diag::get().log("LOAD %d: unknown exception", loadId);
+    }
+    long ms = (long)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - t0).count();
+    sxxl::Diag::get().log("LOAD %d: done in %ld ms", loadId, ms);
+    loadDone = true;
+  }
+  void joinLoader() {
+    if (loaderRunning) pthread_join(loader, nullptr), loaderRunning = false;
   }
   // called under the wrapper's lock: a finished load hands the synth back
   void finishLoad(bool wait) {
     if (!loading || !(wait || loadDone)) return;
-    if (loader.joinable()) loader.join();
+    joinLoader();
     synth->patchChanged = false;
     afterPatchLoad();
   }
@@ -513,7 +551,14 @@ struct Inst : public SurgeSynthesizer::PluginLayer {
   void set(const char *key, const char *val) {
     if (!strcmp(key, "state")) {
       finishLoad(true);
-      return setState(val);
+      sxxl::Diag::get().log("state: restoring %d bytes", (int)strlen(val));
+      setState(val);
+      sxxl::Diag::get().log("state: restored (%s)", loadedName.c_str());
+      return;
+    }
+    if (!strcmp(key, "test_crash") && getenv("SXXL_TEST_CRASH")) {   // the offline test of the crash log only
+      volatile int *z = nullptr;
+      *z = 1;
     }
     finishLoad(false);
     if (loading) return;                       // the load owns the synth (a Q-Link moved meanwhile is dropped)
@@ -880,20 +925,51 @@ struct Inst : public SurgeSynthesizer::PluginLayer {
 };
 
 // ---- the engine interface ---------------------------------------------------------------------------------------
-void *e_create(const char *dir) {
-  Inst *s = new Inst();
-  if (!s->init(dir)) {
-    delete s;
-    return nullptr;
+// No exception may leave the plugin (it would end MPC): each entry point catches, logs and carries on.
+#define GUARD(WHERE_, FAIL_)                                                          \
+  catch (const std::exception &ex_) {                                             \
+    sxxl::Diag::get().log("%s: exception %s", WHERE_, ex_.what());                    \
+    FAIL_;                                                                        \
+  }                                                                               \
+  catch (...) {                                                                   \
+    sxxl::Diag::get().log("%s: unknown exception", WHERE_);                         \
+    FAIL_;                                                                        \
   }
-  return s;
+void *e_create(const char *dir) {
+  try {
+    Inst *s = new Inst();
+    if (!s->init(dir)) {
+      delete s;
+      return nullptr;
+    }
+    return s;
+  }
+  GUARD("create", return nullptr)
 }
-void e_destroy(void *p) { delete (Inst *)p; }
-void e_midi(void *p, const uint8_t *m, int n) { ((Inst *)p)->midi(m, n); }
-void e_set(void *p, const char *k, const char *v) { ((Inst *)p)->set(k, v); }
-int e_get(void *p, const char *k, char *b, int n) { return ((Inst *)p)->get(k, b, n); }
-void e_render(void *p, int16_t *o, int n) { ((Inst *)p)->render(o, n); }
-void e_song_pos(void *p, double ppq, double bpm, int playing, int n) { ((Inst *)p)->songPos(ppq, bpm, playing, n); }
+void e_destroy(void *p) {
+  try { delete (Inst *)p; }
+  GUARD("destroy", return)
+}
+void e_midi(void *p, const uint8_t *m, int n) {
+  try { ((Inst *)p)->midi(m, n); }
+  GUARD("midi", return)
+}
+void e_set(void *p, const char *k, const char *v) {
+  try { ((Inst *)p)->set(k, v); }
+  GUARD(k, return)
+}
+int e_get(void *p, const char *k, char *b, int n) {
+  try { return ((Inst *)p)->get(k, b, n); }
+  GUARD(k, return 0)
+}
+void e_render(void *p, int16_t *o, int n) {
+  try { ((Inst *)p)->render(o, n); }
+  GUARD("render", memset(o, 0, sizeof(int16_t) * 2 * n); return)
+}
+void e_song_pos(void *p, double ppq, double bpm, int playing, int n) {
+  try { ((Inst *)p)->songPos(ppq, bpm, playing, n); }
+  GUARD("song_pos", return)
+}
 
 const mpc_engine_t kEngine = {e_create, e_destroy, e_midi, e_set, e_get, e_render, nullptr, e_song_pos};
 

@@ -1,4 +1,4 @@
-# SurgeXXL v0.1.1
+# SurgeXXL v0.1.2
 
 ![SurgeXXL, its eight pages](docs/img/pages.png)
 
@@ -13,7 +13,7 @@ Force's 32-bit ARM, with eight pages drawn in the look of [InterzoneXXL](https:/
 MPC project.
 
 > [!NOTE]
-> **Status: 0.1.1. 0.1.0 crashed the Force on LOAD; 0.1.1 fixes that and is otherwise not yet tested on a Force.** Every build is tested offline: the engine and mpc-vst-plugins' host
+> **Status: 0.1.2, being tested on a Force: LOAD has crashed MPC (0.1.0 and 0.1.1). 0.1.2 writes a crash log, `/sdcard/SurgeXXL/surgexxl.log`; if it crashes, that file says where.** Every build is tested offline: the engine and mpc-vst-plugins' host
 > test on x86, and the Force binary itself under an ARM emulator (see [Testing](#testing)). The first device test
 > decides the voice count a Force can carry (see [CPU](#cpu)). Report anything odd under Issues.
 
@@ -60,6 +60,11 @@ The plugin finds its data next to its library (`<plugin folder>/data`: Surge's p
 tunings) and keeps your files in a `SurgeXXL` folder beside the `Synths` folder it is installed in:
 `/sdcard/SurgeXXL` for `/sdcard/Synths`, `/media/<card>/SurgeXXL` on a card. It makes `Patches/` and
 `Wavetables/` there the first time it runs. Reinstalling or updating the plugin never touches it.
+
+## Crash log
+
+`/sdcard/SurgeXXL/surgexxl.log` (next to your Patches and Wavetables) records each instance, each LOAD and project
+restore, and, if the plugin brings MPC down, where it happened. Attach it to an Issue.
 
 ## The project, presets and state
 

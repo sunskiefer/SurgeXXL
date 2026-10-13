@@ -391,6 +391,11 @@ int main(int argc, char **argv) {
   void *s = E->create(data.c_str());
   CHECK(s, "create");
   if (!s) return 1;
+  if (argc > 2 && !strcmp(argv[2], "--crash")) {   // the crash log's own test: run_tests.sh reads the log after
+    render(s, 128);
+    set(s, "test_crash", "1");
+    return 3;
+  }
   printf("ok   created in %.0f ms: %s patches, %s wavetables, user folder %s\n", (now() - t0) * 1000,
          get(s, "test_num_patches").c_str(), get(s, "test_num_wt").c_str(), get(s, "test_user_dir").c_str());
   render(s, 4410);

@@ -1,0 +1,46 @@
+# Builds SurgeXXL for the Force and publishes the installer zip as a GitHub release.
+# Push a tag vX.Y.Z (with .github/release-notes/vX.Y.Z.md committed) or run it by hand with the version.
+name: Release
+on:
+  push:
+    tags: ['v*.*.*']
+  workflow_dispatch:
+    inputs:
+      version: { description: 'Version, X.Y.Z (the tag is vX.Y.Z)', required: true }
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 300
+    steps:
+      - name: Version
+        run: |
+          v="${{ github.event.inputs.version }}"; [ -n "$v" ] || v="${GITHUB_REF_NAME#v}"
+          echo "VERSION=$v" >> "$GITHUB_ENV"; echo "TAG=v$v" >> "$GITHUB_ENV"
+      - uses: actions/checkout@v4
+        with: { submodules: recursive }
+      - name: Tools
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ninja-build libcairo2 zip
+          pip install --break-system-packages ziglang==0.17.0 Pillow==12.3.0 CairoSVG==2.9.1
+      - name: Build
+        run: ./build.sh
+      - name: Package
+        run: |
+          P="build/package/ANDREALPHEUS - VST - SurgeXXL"
+          python3 third_party/mpc-vst-plugins/tools/release.py --so "$P/surgexxl.so" --skin "$P" \
+            --entry build/pluginlist-entry.xml --version "$VERSION" --id surgexxl --repo sunskiefer/SurgeXXL \
+            --license GPL-3.0-or-later -o dist \
+            --about "Surge XT's synth engine (every factory patch and wavetable, your own patches and wavetables) as a native instrument for the Akai Force."
+          python3 third_party/mpc-vst-plugins/tools/catalog_check.py "dist/SurgeXXL-$VERSION-mpc-armv7.zip" --catalog
+      - name: Publish
+        env: { GH_TOKEN: '${{ github.token }}' }
+        run: |
+          notes=".github/release-notes/$TAG.md"; [ -f "$notes" ] || { echo "SurgeXXL $VERSION" > /tmp/notes.md; notes=/tmp/notes.md; }
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" "dist/SurgeXXL-$VERSION-mpc-armv7.zip" --clobber
+          else
+            gh release create "$TAG" "dist/SurgeXXL-$VERSION-mpc-armv7.zip" --target "$GITHUB_SHA" \
+              --title "SurgeXXL $VERSION" --notes-file "$notes"
+          fi

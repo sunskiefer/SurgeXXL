@@ -1,0 +1,6 @@
+#!/bin/sh
+# LuaJIT's build tools (minilua, buildvm) must match the target's pointer size: for the 32-bit Force they are built as
+# static 32-bit x86 Linux programs, which run on any x86-64 Linux build machine.
+args=""
+for a in "$@"; do [ "$a" = "-m32" ] || args="$args '$a'"; done
+eval exec ${ZIG:-python3 -m ziglang} cc -target x86-linux-musl -static -O2 -fno-sanitize=all -Wno-date-time $args

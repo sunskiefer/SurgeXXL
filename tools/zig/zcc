@@ -1,0 +1,4 @@
+#!/bin/sh
+# zig's C compiler for the Force (MPC OS Gen1): armv7-a hard-float, glibc 2.31 (loads on MPC OS 2.x and 3.x). The CPU is
+# the Force's RK3288 Cortex-A17 (mpc-vst-plugins docs/NOTES.md "CPU layout"), which has NEON: Surge's SIMD runs on it.
+exec ${ZIG:-python3 -m ziglang} cc -target arm-linux-gnueabihf.2.31 -mcpu=cortex_a17 -fno-sanitize=all -Wno-date-time "$@"

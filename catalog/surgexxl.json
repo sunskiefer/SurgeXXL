@@ -1,0 +1,4 @@
+{ "id": "surgexxl", "name": "SurgeXXL", "author": "L'Cronx", "repo": "sunskiefer/SurgeXXL",
+  "kind": "instrument", "style": "synth", "tags": ["synth", "wavetable", "polysynth", "hybrid", "surge", "surge-xt", "fm", "modulation", "presets", "step-sequencer"],
+  "license": "GPL-3.0-or-later", "screenshot": "https://raw.githubusercontent.com/sunskiefer/SurgeXXL/main/docs/img/pages.png",
+  "summary": "Surge XT's hybrid synth engine on the Force: two scenes of three oscillators (wavetable, FM, classic, string, Twist and more), Surge's filters, waveshaper, LFOs, step sequencer and modulation matrix, 16 FX slots and 8 macros, with all 3008 factory and third-party patches and 761 wavetables (each with its picture), your own patches and wavetables, on eight pages in the InterzoneXXL look with LXRXXL BAZZLINE's mixer. Every Surge effect but Spring Reverb, Airwindows included. Free; not for sale (CC BY-NC artwork)." }

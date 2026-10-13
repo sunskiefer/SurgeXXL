@@ -1,0 +1,460 @@
+<title>SurgeXXL Q-Link Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Michroma&family=Chakra+Petch:wght@500;600&family=Barlow+Semi+Condensed:wght@400;500;600&display=swap">
+<style>
+/* Layout: the plugin page as a picture you tap to number, the numbers list beside it, the knob banks under both.
+   One look (the hardware's dark panel and its display orange), used in both themes. */
+:root {
+  --bg: #12100d;
+  --panel: #1c1915;
+  --raised: #26221c;
+  --line: #3b342b;
+  --fg: #ede7dc;
+  --dim: #a2988a;
+  --accent: #fb9013;
+  --accent-ink: #1a1007;
+  --warn: #e0b04a;
+  --ok: #7fc28a;
+  --display: "Michroma", "Eurostile", "Arial Narrow", sans-serif;
+  --body: "Barlow Semi Condensed", "Arial Narrow", system-ui, sans-serif;
+  --mono: "Chakra Petch", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { background: var(--bg); color: var(--fg); }
+body { font: 500 16px/1.4 var(--body); }
+.wrap { max-width: 1320px; margin: 0 auto; padding-inline: 16px; padding-block: 18px 40px; display: grid; gap: 18px; }
+header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 20px; }
+h1 { font: 400 clamp(18px, 2.4vw, 26px)/1.15 var(--display); letter-spacing: .06em; margin: 0; text-wrap: balance; }
+h1 span { color: var(--accent); }
+.lede { margin: 0; color: var(--dim); max-width: 70ch; }
+.lede b { color: var(--fg); font-weight: 600; }
+.status { font: 600 13px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; padding: 7px 10px; border: 1px solid var(--line); border-radius: 4px; color: var(--dim); white-space: nowrap; }
+.status[data-s="saved"] { color: var(--ok); border-color: color-mix(in srgb, var(--ok) 45%, var(--line)); }
+.status[data-s="saving"] { color: var(--accent); }
+.status[data-s="local"] { color: var(--warn); }
+.tabs { display: flex; flex-wrap: wrap; gap: 6px; }
+.tab { font: 400 13px/1 var(--display); letter-spacing: .1em; color: var(--dim); background: var(--panel); border: 1px solid var(--line); border-radius: 4px; padding: 11px 14px; cursor: pointer; }
+.tab[aria-selected="true"] { color: var(--accent-ink); background: var(--accent); border-color: var(--accent); }
+.tab .n { font-family: var(--mono); margin-left: 6px; opacity: .8; }
+.tab:focus-visible, button:focus-visible, input:focus-visible, .spot:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.stage { position: relative; width: 100%; aspect-ratio: 1280 / 628; max-width: 100%; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; background: #000; }
+.stage img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; user-select: none; -webkit-user-drag: none; }
+.spot { position: absolute; border: 1px dashed rgba(251,144,19,.0); border-radius: 6px; background: transparent; cursor: pointer; padding: 0; }
+.spot:hover, .spot.hl { border-color: rgba(251,144,19,.75); background: rgba(251,144,19,.10); }
+.badge { position: absolute; left: -6px; top: -6px; min-width: 24px; height: 24px; padding: 0 5px; border-radius: 12px; display: grid; place-items: center; font: 600 13px/1 var(--mono); font-variant-numeric: tabular-nums; pointer-events: none; }
+.badge.on { background: var(--accent); color: var(--accent-ink); box-shadow: 0 0 0 2px var(--accent-ink); }
+.badge.off { background: rgba(18,16,13,.82); color: var(--dim); border: 1px dashed var(--dim); }
+@media (max-width: 700px) { .badge { min-width: 18px; height: 18px; font-size: 10px; left: -4px; top: -4px; padding: 0 3px; } }
+.tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+button.act { font: 600 14px/1 var(--body); letter-spacing: .02em; color: var(--fg); background: var(--raised); border: 1px solid var(--line); border-radius: 4px; padding: 10px 14px; cursor: pointer; }
+button.act:hover { border-color: var(--accent); }
+button.act.danger { color: #ffb3a1; }
+.confirm { display: inline-flex; gap: 8px; align-items: center; color: var(--warn); font-weight: 600; }
+.grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+@media (max-width: 900px) { .grid { grid-template-columns: minmax(0, 1fr); } }
+section.box { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 14px; min-width: 0; display: grid; gap: 10px; }
+h2 { font: 400 13px/1.2 var(--display); letter-spacing: .12em; margin: 0; color: var(--dim); }
+.rows { display: grid; gap: 4px; }
+.row { display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 4px 6px; border-radius: 4px; }
+.row.hl { background: var(--raised); }
+.row input { width: 64px; font: 600 16px/1 var(--mono); font-variant-numeric: tabular-nums; text-align: center; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 4px; padding: 8px 4px; }
+.row input.set { border-color: var(--accent); color: var(--accent); }
+.row .nm { overflow-wrap: anywhere; }
+.row .where { font: 500 12px/1 var(--mono); color: var(--dim); white-space: nowrap; }
+.sep { font: 600 12px/1 var(--mono); color: var(--warn); letter-spacing: .08em; text-transform: uppercase; padding: 10px 6px 2px; }
+.banks { display: grid; gap: 10px; }
+.bank { border: 1px solid var(--line); border-radius: 5px; padding: 10px; display: grid; gap: 6px; }
+.bank h3 { margin: 0; font: 600 14px/1.2 var(--body); display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.bank h3 small { font: 500 12px/1.2 var(--mono); color: var(--dim); }
+.knobs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+@media (max-width: 520px) { .knobs { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.knob { background: var(--bg); border: 1px solid var(--line); border-radius: 4px; padding: 6px 7px; min-width: 0; }
+.knob b { display: block; font: 600 12px/1 var(--mono); color: var(--accent); margin-bottom: 3px; }
+.knob span { font-size: 14px; overflow-wrap: anywhere; }
+.knob.empty span { color: var(--dim); }
+.note { color: var(--dim); font-size: 14px; margin: 0; }
+.note b { color: var(--fg); }
+.knob { display: grid; gap: 4px; align-content: start; }
+.knob.space { border-style: dashed; }
+.knob button.mini { justify-self: start; font: 600 12px/1 var(--body); color: var(--dim); background: transparent; border: 1px solid var(--line); border-radius: 3px; padding: 5px 7px; cursor: pointer; }
+.knob button.mini:hover { color: var(--fg); border-color: var(--accent); }
+label.act { font: 600 14px/1 var(--body); color: var(--fg); background: var(--raised); border: 1px solid var(--line); border-radius: 4px; padding: 10px 14px; cursor: pointer; }
+.copybox { width: 100%; min-height: 90px; font: 500 13px/1.35 var(--mono); color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 4px; padding: 8px; }
+@media (prefers-reduced-motion: no-preference) { .spot, .row { transition: background .12s, border-color .12s; } }
+</style>
+<div class="wrap">
+  <header>
+    <div style="display:grid;gap:6px;min-width:0">
+      <h1>SurgeXXL <span>Q-LINK MAP</span></h1>
+      <p class="lede">Number the controls in the order you want them on the knobs. <b>1-8</b> is the first Q-Link page (Force knobs 1-8), <b>9-16</b> the second, and so on. Tap a control on the picture to give it the next number (tap again to take it off), or type a number in the list. To leave a knob empty, type a higher number (skipping one leaves that knob empty) or use <b>Leave empty</b> under the knobs. Your numbers save automatically.</p>
+    </div>
+    <div class="status" id="status" data-s="loading">Loading…</div>
+  </header>
+
+  <nav class="tabs" role="tablist" id="tabs"></nav>
+
+  <div class="stage" id="stage"><img id="pic" alt=""></div>
+
+  <div class="tools">
+    <button class="act" id="useCurrent" type="button">Back to the plugin's present order</button>
+    <span id="clearWrap"><button class="act danger" id="clear" type="button">Clear all numbers on this page</button></span>
+  </div>
+
+  <div class="grid">
+    <section class="box" aria-labelledby="h-list">
+      <h2 id="h-list">CONTROLS AND THEIR NUMBERS</h2>
+      <div class="rows" id="rows"></div>
+    </section>
+    <section class="box" aria-labelledby="h-banks">
+      <h2 id="h-banks">WHAT THE KNOBS WILL TURN</h2>
+      <div class="banks" id="banks"></div>
+      <p class="note" id="leftover"></p>
+    </section>
+  </div>
+
+  <section class="box" aria-labelledby="h-file">
+    <h2 id="h-file">KEEP A COPY ON YOUR COMPUTER</h2>
+    <p class="note">Save every page's numbers as one file (<b>surgexxl-qlinks.json</b>). Load it back here any time, or attach it in a chat with Claude for a future build.</p>
+    <div class="tools">
+      <button class="act" id="saveFile" type="button">Save to my computer</button>
+      <label class="act" for="loadFile" style="display:inline-block">Load a saved file</label>
+      <input type="file" id="loadFile" accept=".json,application/json" hidden>
+      <span class="note" id="fileMsg" role="status"></span>
+    </div>
+  </section>
+
+  <section class="box" aria-labelledby="h-copy">
+    <h2 id="h-copy">AS TEXT</h2>
+    <p class="note">The same numbers as plain text, in case you want to paste them into the chat.</p>
+    <textarea class="copybox" id="copy" readonly></textarea>
+    <div class="tools"><button class="act" id="copyBtn" type="button">Copy the text</button><span class="note" id="copyMsg"></span></div>
+  </section>
+</div>
+<script>
+const DATA = /*DATA*/null;
+const W = 1280, H = 628;
+const PICS = /*PICS*/null;
+const state = { tab: 0, orders: {}, hl: null };
+let db = null, saveTimer = null, pending = new Set();
+
+for (const p of DATA.pages) state.orders[p.id] = p.current.slice();
+try { const t = +localStorage.getItem("qmap-tab"); if (t >= 0 && t < DATA.pages.length) state.tab = t; } catch (e) {}
+
+const $ = (id) => document.getElementById(id);
+const page = () => DATA.pages[state.tab];
+const order = () => state.orders[page().id];
+const trim = (ord) => { while (ord.length && !ord[ord.length - 1]) ord.pop(); return ord; };
+const nameOf = (key) => (page().controls.find((c) => c.key === key) || {}).name || key;
+
+function setStatus(s, text) { const el = $("status"); el.dataset.s = s; el.textContent = text; }
+
+function renderTabs() {
+  const nav = $("tabs");
+  nav.textContent = "";
+  DATA.pages.forEach((p, i) => {
+    const b = document.createElement("button");
+    b.className = "tab"; b.type = "button"; b.id = "tab-" + p.id;
+    b.setAttribute("role", "tab"); b.setAttribute("aria-selected", String(i === state.tab));
+    b.textContent = p.name;
+    const n = document.createElement("span"); n.className = "n";
+    n.textContent = state.orders[p.id].filter(Boolean).length + "/" + p.controls.length;
+    b.appendChild(n);
+    b.onclick = () => { state.tab = i; try { localStorage.setItem("qmap-tab", String(i)); } catch (e) {} render(); };
+    nav.appendChild(b);
+  });
+}
+
+function renderStage() {
+  const st = $("stage");
+  $("pic").src = PICS[state.tab];
+  $("pic").alt = page().name + " page of the plugin";
+  st.querySelectorAll(".spot").forEach((s) => s.remove());
+  const ord = order();
+  for (const c of page().controls) {
+    const n = ord.indexOf(c.key) + 1;
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "spot" + (state.hl === c.key ? " hl" : "");
+    b.style.left = (c.x / W * 100) + "%"; b.style.top = (c.y / H * 100) + "%";
+    b.style.width = (c.w / W * 100) + "%"; b.style.height = (c.h / H * 100) + "%";
+    b.setAttribute("aria-label", c.name + (n ? ", number " + n + ". Tap to take the number off." : ", no number. Tap to give it the next number."));
+    const badge = document.createElement("span");
+    badge.className = "badge " + (n ? "on" : "off");
+    badge.textContent = n ? String(n) : "+";
+    b.appendChild(badge);
+    b.onclick = () => { toggle(c.key); };
+    b.onmouseenter = () => highlight(c.key);
+    b.onmouseleave = () => highlight(null);
+    st.appendChild(b);
+  }
+}
+
+function where(n) { return n ? "page " + Math.ceil(n / 8) + " · knob " + (((n - 1) % 8) + 1) : "not on a knob"; }
+
+function renderRows() {
+  const rows = $("rows");
+  rows.textContent = "";
+  const ord = order();
+  const numbered = ord.map((k) => page().controls.find((c) => c.key === k)).filter(Boolean);
+  const rest = page().controls.filter((c) => !ord.includes(c.key));
+  const add = (c) => {
+    const n = ord.indexOf(c.key) + 1;
+    const r = document.createElement("div");
+    r.className = "row" + (state.hl === c.key ? " hl" : "");
+    const inp = document.createElement("input");
+    inp.type = "number"; inp.min = "1"; inp.max = String(page().controls.length); inp.inputMode = "numeric";
+    inp.id = "n-" + page().id + "-" + c.key;
+    inp.value = n ? String(n) : ""; inp.placeholder = "–";
+    inp.className = n ? "set" : "";
+    inp.setAttribute("aria-label", "Number for " + c.name);
+    inp.onchange = () => place(c.key, inp.value);
+    inp.onfocus = () => highlight(c.key);
+    const nm = document.createElement("span"); nm.className = "nm"; nm.textContent = c.name;
+    const wh = document.createElement("span"); wh.className = "where"; wh.textContent = where(n);
+    r.append(inp, nm, wh);
+    r.onmouseenter = () => highlight(c.key);
+    r.onmouseleave = () => highlight(null);
+    rows.appendChild(r);
+  };
+  numbered.forEach(add);
+  if (rest.length) {
+    const s = document.createElement("div"); s.className = "sep";
+    s.textContent = rest.length + " without a number (no knob)";
+    rows.appendChild(s);
+    rest.forEach(add);
+  }
+}
+
+function renderBanks() {
+  const box = $("banks");
+  box.textContent = "";
+  const ord = order();
+  const pages = Math.max(1, Math.ceil((ord.length + 1) / 8));
+  for (let p = 0; p < pages; p++) {
+    const bank = document.createElement("div"); bank.className = "bank";
+    const h = document.createElement("h3");
+    h.textContent = page().name + " · Q-Link page " + (p + 1);
+    const sm = document.createElement("small"); sm.textContent = "numbers " + (p * 8 + 1) + "-" + (p * 8 + 8);
+    h.appendChild(sm);
+    const k = document.createElement("div"); k.className = "knobs";
+    for (let i = 0; i < 8; i++) {
+      const at = p * 8 + i, key = ord[at];
+      const cell = document.createElement("div");
+      const b = document.createElement("b"); b.textContent = "KNOB " + (i + 1) + " · " + (at + 1);
+      const s2 = document.createElement("span");
+      const act = document.createElement("button"); act.type = "button"; act.className = "mini";
+      if (key) {
+        cell.className = "knob";
+        s2.textContent = nameOf(key);
+        act.textContent = "Leave empty"; act.title = "Put an empty knob here; this and the next controls move one knob on";
+        act.onclick = () => { ord.splice(at, 0, ""); changed(); };
+      } else if (at < ord.length) {
+        cell.className = "knob empty space";
+        s2.textContent = "empty (space)";
+        act.textContent = "Remove the space"; act.onclick = () => { ord.splice(at, 1); trim(ord); changed(); };
+      } else if (at === ord.length) {
+        cell.className = "knob empty";
+        s2.textContent = "nothing yet";
+        act.textContent = "Leave empty"; act.title = "Keep this knob empty: the next number goes on the knob after it";
+        act.onclick = () => { ord.push(""); changed(); };
+      } else {
+        cell.className = "knob empty"; s2.textContent = "nothing"; act.hidden = true;
+      }
+      cell.append(b, s2, act);
+      k.appendChild(cell);
+    }
+    bank.append(h, k);
+    box.appendChild(bank);
+  }
+  const left = page().controls.filter((c) => !ord.includes(c.key)).length;
+  $("leftover").textContent = left ? left + " control" + (left > 1 ? "s have" : " has") + " no number, so no knob turns " + (left > 1 ? "them" : "it") + "." : "Every control on this page has a knob.";
+}
+
+function renderCopy() {
+  const lines = [];
+  for (const p of DATA.pages) {
+    const ord = state.orders[p.id];
+    lines.push(p.name + ":");
+    ord.forEach((k, i) => {
+      const c = p.controls.find((x) => x.key === k);
+      lines.push("  " + (i + 1) + " " + (k ? (c ? c.name : k) + " (" + k + ")" : "(empty)"));
+    });
+    const rest = p.controls.filter((c) => !ord.includes(c.key));
+    if (rest.length) lines.push("  no number: " + rest.map((c) => c.name).join(", "));
+  }
+  $("copy").value = lines.join("\n");
+}
+
+function render() { renderTabs(); renderStage(); renderRows(); renderBanks(); renderCopy(); resetClear(); }
+
+function highlight(key) {
+  state.hl = key;
+  document.querySelectorAll(".spot").forEach((s, i) => s.classList.toggle("hl", page().controls[i].key === key));
+}
+
+function changed() { pending.add(page().id); render(); scheduleSave(); }
+
+function toggle(key) {
+  const ord = order(), i = ord.indexOf(key);
+  if (i >= 0) { ord.splice(i, 1); trim(ord); } else ord.push(key);
+  changed();
+}
+
+function place(key, value) {
+  const ord = order(), i = ord.indexOf(key);
+  if (i >= 0) ord.splice(i, 1);
+  const n = parseInt(value, 10);
+  if (Number.isFinite(n) && n >= 1) {
+    const at = n - 1;
+    if (at < ord.length && !ord[at]) ord[at] = key;         // an empty knob: fill it
+    else if (at >= ord.length) { while (ord.length < at) ord.push(""); ord.push(key); }   // past the end: the knobs between stay empty
+    else ord.splice(at, 0, key);                            // taken: it moves the others one knob on
+  }
+  trim(ord);
+  changed();
+}
+
+$("useCurrent").onclick = () => { state.orders[page().id] = page().current.slice(); changed(); };
+function resetClear() {
+  const w = $("clearWrap");
+  w.textContent = "";
+  const b = document.createElement("button");
+  b.className = "act danger"; b.type = "button"; b.id = "clear"; b.textContent = "Clear all numbers on this page";
+  b.onclick = () => {
+    w.textContent = "";
+    const s = document.createElement("span"); s.className = "confirm"; s.textContent = "Clear every number on " + page().name + "?";
+    const yes = document.createElement("button"); yes.className = "act danger"; yes.type = "button"; yes.textContent = "Clear";
+    const no = document.createElement("button"); no.className = "act"; no.type = "button"; no.textContent = "Keep them";
+    yes.onclick = () => { state.orders[page().id] = []; changed(); };
+    no.onclick = resetClear;
+    s.append(yes, no); w.appendChild(s);
+  };
+  w.appendChild(b);
+}
+
+$("copyBtn").onclick = () => {
+  const t = $("copy").value;
+  const ok = () => { $("copyMsg").textContent = "Copied."; };
+  const fallback = () => { $("copy").focus(); $("copy").select(); $("copyMsg").textContent = "Selected: copy it from the box."; };
+  try { navigator.clipboard.writeText(t).then(ok, fallback); } catch (e) { fallback(); }
+};
+
+function exportData() {
+  const out = { plugin: "SurgeXXL", format: "qlink-map 1", savedAt: new Date().toISOString(), pages: {} };
+  for (const p of DATA.pages) {
+    out.pages[p.id] = {
+      name: p.name,
+      knobs: state.orders[p.id].map((k, i) => ({ n: i + 1, qlinkPage: Math.floor(i / 8) + 1, knob: (i % 8) + 1, key: k || null,
+                                                 name: k ? (p.controls.find((c) => c.key === k) || {}).name || k : null }))
+    };
+  }
+  return JSON.stringify(out, null, 1);
+}
+
+$("saveFile").onclick = async () => {
+  const msg = $("fileMsg");
+  let dl = null;
+  try { dl = window.claude && (await window.claude.use("downloads")); } catch (e) { dl = null; }
+  if (!dl) {   // the copy on your own computer: a plain download
+    try {
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(new Blob([exportData()], { type: "application/json" }));
+      a.download = "surgexxl-qlinks.json";
+      document.body.appendChild(a); a.click(); a.remove();
+      msg.textContent = "Saved surgexxl-qlinks.json (check your downloads).";
+    } catch (e) { msg.textContent = "Saving files isn't available here: copy the text below instead."; }
+    return;
+  }
+  try {
+    await dl.save({ filename: "surgexxl-qlinks.json", data: exportData() });
+    msg.textContent = "Saved surgexxl-qlinks.json.";
+  } catch (e) {
+    msg.textContent = e && e.code === "declined" ? "Not saved." : "Couldn't save the file: copy the text below instead.";
+  }
+};
+
+$("loadFile").onchange = () => {
+  const f = $("loadFile").files[0], msg = $("fileMsg");
+  if (!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try {
+      const d = JSON.parse(String(r.result));
+      if (!d || !d.pages) throw new Error("no pages");
+      let n = 0;
+      for (const p of DATA.pages) {
+        const pg = d.pages[p.id];
+        if (!pg || !Array.isArray(pg.knobs)) continue;
+        const known = new Set(p.controls.map((c) => c.key));
+        const ord = [];
+        for (const k of pg.knobs) { const i = (k.n | 0) - 1; if (i >= 0 && i < 400) { while (ord.length <= i) ord.push(""); ord[i] = k.key && known.has(k.key) && !ord.includes(k.key) ? k.key : ""; } }
+        state.orders[p.id] = trim(ord); pending.add(p.id); n++;
+      }
+      if (!n) throw new Error("no pages");
+      render(); scheduleSave();
+      msg.textContent = "Loaded " + f.name + ".";
+    } catch (e) { msg.textContent = "That file isn't a saved Q-Link map."; }
+    $("loadFile").value = "";
+  };
+  r.readAsText(f);
+};
+
+function scheduleSave() {
+  if (!db) {   // no account storage (the copy on your computer): keep the numbers in this browser
+    try { localStorage.setItem("qmap-orders", JSON.stringify(state.orders)); setStatus("saved", "Saved in this browser"); }
+    catch (e) { setStatus("local", "Not saved: use Save to my computer"); }
+    return;
+  }
+  setStatus("saving", "Saving…");
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(save, 700);
+}
+
+async function save() {
+  const ids = [...pending]; pending.clear();
+  try {
+    for (const id of ids) {
+      const p = DATA.pages.find((x) => x.id === id);
+      await db.doc("maps/" + id).set({ page: p.name, order: state.orders[id].slice(), updatedAt: Date.now() });
+    }
+    setStatus("saved", "Saved");
+  } catch (e) {
+    ids.forEach((id) => pending.add(id));
+    setStatus("local", e && e.code === "not_granted" ? "Not saved: no permission" : "Not saved: try again");
+  }
+}
+
+render();
+setStatus("loading", "Loading…");
+(async () => {
+  try { db = window.claude && (await window.claude.use("db")); } catch (e) { db = null; }
+  if (!db) {
+    try {
+      const o = JSON.parse(localStorage.getItem("qmap-orders") || "null");
+      if (o) for (const p of DATA.pages) if (Array.isArray(o[p.id])) {
+        const known = new Set(p.controls.map((c) => c.key));
+        state.orders[p.id] = trim(o[p.id].map((k) => (typeof k === "string" && known.has(k) ? k : "")));
+      }
+      render();
+      setStatus("saved", o ? "Saved in this browser" : "Saves in this browser");
+    } catch (e) { setStatus("local", "Not saved: use Save to my computer"); }
+    return;
+  }
+  try {
+    for (const p of DATA.pages) {
+      const snap = await db.doc("maps/" + p.id).get();
+      const d = snap.exists ? snap.data() : null;
+      if (d && Array.isArray(d.order)) {
+        const known = new Set(p.controls.map((c) => c.key));
+        state.orders[p.id] = trim(d.order.map((k) => (typeof k === "string" && known.has(k) ? k : "")));
+      }
+    }
+    render();
+    setStatus("saved", "Saved");
+  } catch (e) {
+    setStatus("local", "Couldn't load your saved numbers");
+  }
+})();
+</script>
+

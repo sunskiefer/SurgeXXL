@@ -1,0 +1,1061 @@
+{
+ "plugin": "SurgeXXL",
+ "format": "qlink-map 1",
+ "pages": {
+  "osc": {
+   "name": "OSC",
+   "knobs": [
+    {
+     "n": 1,
+     "qlinkPage": 1,
+     "knob": 1,
+     "key": "osc_p1",
+     "name": "Osc Param 1"
+    },
+    {
+     "n": 2,
+     "qlinkPage": 1,
+     "knob": 2,
+     "key": "osc_p2",
+     "name": "Osc Param 2"
+    },
+    {
+     "n": 3,
+     "qlinkPage": 1,
+     "knob": 3,
+     "key": "osc_p3",
+     "name": "Osc Param 3"
+    },
+    {
+     "n": 4,
+     "qlinkPage": 1,
+     "knob": 4,
+     "key": "osc_p4",
+     "name": "Osc Param 4"
+    },
+    {
+     "n": 5,
+     "qlinkPage": 1,
+     "knob": 5,
+     "key": "osc_p5",
+     "name": "Osc Param 5"
+    },
+    {
+     "n": 6,
+     "qlinkPage": 1,
+     "knob": 6,
+     "key": "osc_p6",
+     "name": "Osc Param 6"
+    },
+    {
+     "n": 7,
+     "qlinkPage": 1,
+     "knob": 7,
+     "key": "osc_p7",
+     "name": "Osc Param 7"
+    },
+    {
+     "n": 8,
+     "qlinkPage": 1,
+     "knob": 8,
+     "key": "osc_pitch",
+     "name": "Osc Pitch"
+    },
+    {
+     "n": 9,
+     "qlinkPage": 2,
+     "knob": 1,
+     "key": "wt",
+     "name": "Wavetable"
+    },
+    {
+     "n": 10,
+     "qlinkPage": 2,
+     "knob": 2,
+     "key": "osc_octave",
+     "name": "Osc Octave"
+    },
+    {
+     "n": 11,
+     "qlinkPage": 2,
+     "knob": 3,
+     "key": "osc_type",
+     "name": "Osc Type"
+    },
+    {
+     "n": 12,
+     "qlinkPage": 2,
+     "knob": 4,
+     "key": "osc_sel",
+     "name": "Oscillator"
+    },
+    {
+     "n": 13,
+     "qlinkPage": 2,
+     "knob": 5,
+     "key": "osc_keytrack",
+     "name": "Osc Keytrack"
+    },
+    {
+     "n": 14,
+     "qlinkPage": 2,
+     "knob": 6,
+     "key": "osc_retrig",
+     "name": "Osc Retrigger"
+    }
+   ]
+  },
+  "mixer": {
+   "name": "MIXER",
+   "knobs": [
+    {
+     "n": 1,
+     "qlinkPage": 1,
+     "knob": 1,
+     "key": "mix_o1",
+     "name": "Osc 1 Level"
+    },
+    {
+     "n": 2,
+     "qlinkPage": 1,
+     "knob": 2,
+     "key": "mix_o2",
+     "name": "Osc 2 Level"
+    },
+    {
+     "n": 3,
+     "qlinkPage": 1,
+     "knob": 3,
+     "key": "mix_o3",
+     "name": "Osc 3 Level"
+    },
+    {
+     "n": 4,
+     "qlinkPage": 1,
+     "knob": 4,
+     "key": "mix_noise",
+     "name": "Noise Level"
+    },
+    {
+     "n": 5,
+     "qlinkPage": 1,
+     "knob": 5,
+     "key": "mix_r12",
+     "name": "Ring 1x2 Level"
+    },
+    {
+     "n": 6,
+     "qlinkPage": 1,
+     "knob": 6,
+     "key": "mix_r23",
+     "name": "Ring 2x3 Level"
+    },
+    {
+     "n": 7,
+     "qlinkPage": 1,
+     "knob": 7,
+     "key": "mix_pfg",
+     "name": "Pre-Filter Gain"
+    },
+    {
+     "n": 8,
+     "qlinkPage": 1,
+     "knob": 8,
+     "key": "sc_volume",
+     "name": "Scene Volume"
+    },
+    {
+     "n": 9,
+     "qlinkPage": 2,
+     "knob": 1,
+     "key": "fm_depth",
+     "name": "FM Depth"
+    },
+    {
+     "n": 10,
+     "qlinkPage": 2,
+     "knob": 2,
+     "key": "noise_color",
+     "name": "Noise Color"
+    },
+    {
+     "n": 11,
+     "qlinkPage": 2,
+     "knob": 3,
+     "key": "osc_drift",
+     "name": "Osc Drift"
+    },
+    {
+     "n": 12,
+     "qlinkPage": 2,
+     "knob": 4,
+     "key": "sc_pan",
+     "name": "Scene Pan"
+    },
+    {
+     "n": 13,
+     "qlinkPage": 2,
+     "knob": 5,
+     "key": "sc_width",
+     "name": "Scene Width"
+    },
+    {
+     "n": 14,
+     "qlinkPage": 2,
+     "knob": 6,
+     "key": "fm_routing",
+     "name": "FM Routing"
+    },
+    {
+     "n": 15,
+     "qlinkPage": 2,
+     "knob": 7,
+     "key": "route_o1",
+     "name": "Osc 1 Route"
+    },
+    {
+     "n": 16,
+     "qlinkPage": 2,
+     "knob": 8,
+     "key": "route_o2",
+     "name": "Osc 2 Route"
+    },
+    {
+     "n": 17,
+     "qlinkPage": 3,
+     "knob": 1,
+     "key": "mute_o1",
+     "name": "Osc 1 Mute"
+    },
+    {
+     "n": 18,
+     "qlinkPage": 3,
+     "knob": 2,
+     "key": "mute_o2",
+     "name": "Osc 2 Mute"
+    },
+    {
+     "n": 19,
+     "qlinkPage": 3,
+     "knob": 3,
+     "key": "mute_o3",
+     "name": "Osc 3 Mute"
+    },
+    {
+     "n": 20,
+     "qlinkPage": 3,
+     "knob": 4,
+     "key": "mute_noise",
+     "name": "Noise Mute"
+    },
+    {
+     "n": 21,
+     "qlinkPage": 3,
+     "knob": 5,
+     "key": "solo_o1",
+     "name": "Osc 1 Solo"
+    },
+    {
+     "n": 22,
+     "qlinkPage": 3,
+     "knob": 6,
+     "key": "solo_o2",
+     "name": "Osc 2 Solo"
+    },
+    {
+     "n": 23,
+     "qlinkPage": 3,
+     "knob": 7,
+     "key": "solo_o3",
+     "name": "Osc 3 Solo"
+    },
+    {
+     "n": 24,
+     "qlinkPage": 3,
+     "knob": 8,
+     "key": "solo_noise",
+     "name": "Noise Solo"
+    }
+   ]
+  },
+  "filter": {
+   "name": "FILTER",
+   "knobs": [
+    {
+     "n": 1,
+     "qlinkPage": 1,
+     "knob": 1,
+     "key": "f1_cutoff",
+     "name": "Filter 1 Cutoff"
+    },
+    {
+     "n": 2,
+     "qlinkPage": 1,
+     "knob": 2,
+     "key": "f1_res",
+     "name": "Filter 1 Resonance"
+    },
+    {
+     "n": 3,
+     "qlinkPage": 1,
+     "knob": 3,
+     "key": "f1_env",
+     "name": "Filter 1 FEG Amount"
+    },
+    {
+     "n": 4,
+     "qlinkPage": 1,
+     "knob": 4,
+     "key": "f1_ktrk",
+     "name": "Filter 1 Keytrack"
+    },
+    {
+     "n": 5,
+     "qlinkPage": 1,
+     "knob": 5,
+     "key": "f2_cutoff",
+     "name": "Filter 2 Cutoff"
+    },
+    {
+     "n": 6,
+     "qlinkPage": 1,
+     "knob": 6,
+     "key": "f2_res",
+     "name": "Filter 2 Resonance"
+    },
+    {
+     "n": 7,
+     "qlinkPage": 1,
+     "knob": 7,
+     "key": "f2_env",
+     "name": "Filter 2 FEG Amount"
+    },
+    {
+     "n": 8,
+     "qlinkPage": 1,
+     "knob": 8,
+     "key": "f2_ktrk",
+     "name": "Filter 2 Keytrack"
+    },
+    {
+     "n": 9,
+     "qlinkPage": 2,
+     "knob": 1,
+     "key": "feedback",
+     "name": "Feedback"
+    },
+    {
+     "n": 10,
+     "qlinkPage": 2,
+     "knob": 2,
+     "key": "f_balance",
+     "name": "Filter Balance"
+    },
+    {
+     "n": 11,
+     "qlinkPage": 2,
+     "knob": 3,
+     "key": "highpass",
+     "name": "Highpass"
+    },
+    {
+     "n": 12,
+     "qlinkPage": 2,
+     "knob": 4,
+     "key": "ws_drive",
+     "name": "Waveshaper Drive"
+    },
+    {
+     "n": 13,
+     "qlinkPage": 2,
+     "knob": 5,
+     "key": "f1_type",
+     "name": "Filter 1 Type"
+    },
+    {
+     "n": 14,
+     "qlinkPage": 2,
+     "knob": 6,
+     "key": "f2_type",
+     "name": "Filter 2 Type"
+    },
+    {
+     "n": 15,
+     "qlinkPage": 2,
+     "knob": 7,
+     "key": "ws_type",
+     "name": "Waveshaper Type"
+    },
+    {
+     "n": 16,
+     "qlinkPage": 2,
+     "knob": 8,
+     "key": "fb_config",
+     "name": "Filter Config"
+    },
+    {
+     "n": 17,
+     "qlinkPage": 3,
+     "knob": 1,
+     "key": "f1_subtype",
+     "name": "Filter 1 Subtype"
+    },
+    {
+     "n": 18,
+     "qlinkPage": 3,
+     "knob": 2,
+     "key": "f2_subtype",
+     "name": "Filter 2 Subtype"
+    }
+   ]
+  },
+  "envlfo": {
+   "name": "ENV / LFO",
+   "knobs": [
+    {
+     "n": 1,
+     "qlinkPage": 1,
+     "knob": 1,
+     "key": "aeg_a",
+     "name": "Amp EG Attack"
+    },
+    {
+     "n": 2,
+     "qlinkPage": 1,
+     "knob": 2,
+     "key": "aeg_d",
+     "name": "Amp EG Decay"
+    },
+    {
+     "n": 3,
+     "qlinkPage": 1,
+     "knob": 3,
+     "key": "aeg_s",
+     "name": "Amp EG Sustain"
+    },
+    {
+     "n": 4,
+     "qlinkPage": 1,
+     "knob": 4,
+     "key": "aeg_r",
+     "name": "Amp EG Release"
+    },
+    {
+     "n": 5,
+     "qlinkPage": 1,
+     "knob": 5,
+     "key": "feg_a",
+     "name": "Filter EG Attack"
+    },
+    {
+     "n": 6,
+     "qlinkPage": 1,
+     "knob": 6,
+     "key": "feg_d",
+     "name": "Filter EG Decay"
+    },
+    {
+     "n": 7,
+     "qlinkPage": 1,
+     "knob": 7,
+     "key": "feg_s",
+     "name": "Filter EG Sustain"
+    },
+    {
+     "n": 8,
+     "qlinkPage": 1,
+     "knob": 8,
+     "key": "feg_r",
+     "name": "Filter EG Release"
+    },
+    {
+     "n": 9,
+     "qlinkPage": 2,
+     "knob": 1,
+     "key": "lfo_rate",
+     "name": "LFO Rate"
+    },
+    {
+     "n": 10,
+     "qlinkPage": 2,
+     "knob": 2,
+     "key": "lfo_phase",
+     "name": "LFO Phase"
+    },
+    {
+     "n": 11,
+     "qlinkPage": 2,
+     "knob": 3,
+     "key": "lfo_amp",
+     "name": "LFO Amplitude"
+    },
+    {
+     "n": 12,
+     "qlinkPage": 2,
+     "knob": 4,
+     "key": "lfo_deform",
+     "name": "LFO Deform"
+    },
+    {
+     "n": 13,
+     "qlinkPage": 2,
+     "knob": 5,
+     "key": "lfo_shape",
+     "name": "LFO Shape"
+    },
+    {
+     "n": 14,
+     "qlinkPage": 2,
+     "knob": 6,
+     "key": "lfo_sel",
+     "name": "LFO"
+    },
+    {
+     "n": 15,
+     "qlinkPage": 2,
+     "knob": 7,
+     "key": "lfo_trig",
+     "name": "LFO Trigger"
+    },
+    {
+     "n": 16,
+     "qlinkPage": 2,
+     "knob": 8,
+     "key": "lfo_uni",
+     "name": "LFO Unipolar"
+    },
+    {
+     "n": 17,
+     "qlinkPage": 3,
+     "knob": 1,
+     "key": "lfo_delay",
+     "name": "LFO EG Delay"
+    },
+    {
+     "n": 18,
+     "qlinkPage": 3,
+     "knob": 2,
+     "key": "lfo_attack",
+     "name": "LFO EG Attack"
+    },
+    {
+     "n": 19,
+     "qlinkPage": 3,
+     "knob": 3,
+     "key": "lfo_hold",
+     "name": "LFO EG Hold"
+    },
+    {
+     "n": 20,
+     "qlinkPage": 3,
+     "knob": 4,
+     "key": "lfo_decay",
+     "name": "LFO EG Decay"
+    },
+    {
+     "n": 21,
+     "qlinkPage": 3,
+     "knob": 5,
+     "key": "lfo_sustain",
+     "name": "LFO EG Sustain"
+    },
+    {
+     "n": 22,
+     "qlinkPage": 3,
+     "knob": 6,
+     "key": "lfo_release",
+     "name": "LFO EG Release"
+    },
+    {
+     "n": 23,
+     "qlinkPage": 3,
+     "knob": 7,
+     "key": "aeg_mode",
+     "name": "Amp EG Mode"
+    },
+    {
+     "n": 24,
+     "qlinkPage": 3,
+     "knob": 8,
+     "key": "feg_mode",
+     "name": "Filter EG Mode"
+    }
+   ]
+  },
+  "stepseq": {
+   "name": "STEP SEQ",
+   "knobs": [
+    {
+     "n": 1,
+     "qlinkPage": 1,
+     "knob": 1,
+     "key": "seq_1",
+     "name": "Step 1"
+    },
+    {
+     "n": 2,
+     "qlinkPage": 1,
+     "knob": 2,
+     "key": "seq_2",
+     "name": "Step 2"
+    },
+    {
+     "n": 3,
+     "qlinkPage": 1,
+     "knob": 3,
+     "key": "seq_3",
+     "name": "Step 3"
+    },
+    {
+     "n": 4,
+     "qlinkPage": 1,
+     "knob": 4,
+     "key": "seq_4",
+     "name": "Step 4"
+    },
+    {
+     "n": 5,
+     "qlinkPage": 1,
+     "knob": 5,
+     "key": "seq_5",
+     "name": "Step 5"
+    },
+    {
+     "n": 6,
+     "qlinkPage": 1,
+     "knob": 6,
+     "key": "seq_6",
+     "name": "Step 6"
+    },
+    {
+     "n": 7,
+     "qlinkPage": 1,
+     "knob": 7,
+     "key": "seq_7",
+     "name": "Step 7"
+    },
+    {
+     "n": 8,
+     "qlinkPage": 1,
+     "knob": 8,
+     "key": "seq_8",
+     "name": "Step 8"
+    },
+    {
+     "n": 9,
+     "qlinkPage": 2,
+     "knob": 1,
+     "key": "seq_9",
+     "name": "Step 9"
+    },
+    {
+     "n": 10,
+     "qlinkPage": 2,
+     "knob": 2,
+     "key": "seq_10",
+     "name": "Step 10"
+    },
+    {
+     "n": 11,
+     "qlinkPage": 2,
+     "knob": 3,
+     "key": "seq_11",
+     "name": "Step 11"
+    },
+    {
+     "n": 12,
+     "qlinkPage": 2,
+     "knob": 4,
+     "key": "seq_12",
+     "name": "Step 12"
+    },
+    {
+     "n": 13,
+     "qlinkPage": 2,
+     "knob": 5,
+     "key": "seq_13",
+     "name": "Step 13"
+    },
+    {
+     "n": 14,
+     "qlinkPage": 2,
+     "knob": 6,
+     "key": "seq_14",
+     "name": "Step 14"
+    },
+    {
+     "n": 15,
+     "qlinkPage": 2,
+     "knob": 7,
+     "key": "seq_15",
+     "name": "Step 15"
+    },
+    {
+     "n": 16,
+     "qlinkPage": 2,
+     "knob": 8,
+     "key": "seq_16",
+     "name": "Step 16"
+    },
+    {
+     "n": 17,
+     "qlinkPage": 3,
+     "knob": 1,
+     "key": "seq_start",
+     "name": "Loop Start"
+    },
+    {
+     "n": 18,
+     "qlinkPage": 3,
+     "knob": 2,
+     "key": "seq_end",
+     "name": "Loop End"
+    },
+    {
+     "n": 19,
+     "qlinkPage": 3,
+     "knob": 3,
+     "key": "lfo_sel",
+     "name": "LFO"
+    }
+   ]
+  },
+  "mod": {
+   "name": "MOD",
+   "knobs": [
+    {
+     "n": 1,
+     "qlinkPage": 1,
+     "knob": 1,
+     "key": "mod_depth",
+     "name": "Mod Depth"
+    },
+    {
+     "n": 2,
+     "qlinkPage": 1,
+     "knob": 2,
+     "key": "mod_slot",
+     "name": "Mod Slot"
+    },
+    {
+     "n": 3,
+     "qlinkPage": 1,
+     "knob": 3,
+     "key": "mod_src",
+     "name": "Mod Source"
+    },
+    {
+     "n": 4,
+     "qlinkPage": 1,
+     "knob": 4,
+     "key": "scene",
+     "name": "Edit Scene"
+    }
+   ]
+  },
+  "fx": {
+   "name": "FX",
+   "knobs": [
+    {
+     "n": 1,
+     "qlinkPage": 1,
+     "knob": 1,
+     "key": "fx_p1",
+     "name": "FX Param 1"
+    },
+    {
+     "n": 2,
+     "qlinkPage": 1,
+     "knob": 2,
+     "key": "fx_p2",
+     "name": "FX Param 2"
+    },
+    {
+     "n": 3,
+     "qlinkPage": 1,
+     "knob": 3,
+     "key": "fx_p3",
+     "name": "FX Param 3"
+    },
+    {
+     "n": 4,
+     "qlinkPage": 1,
+     "knob": 4,
+     "key": "fx_p4",
+     "name": "FX Param 4"
+    },
+    {
+     "n": 5,
+     "qlinkPage": 1,
+     "knob": 5,
+     "key": "fx_p5",
+     "name": "FX Param 5"
+    },
+    {
+     "n": 6,
+     "qlinkPage": 1,
+     "knob": 6,
+     "key": "fx_p6",
+     "name": "FX Param 6"
+    },
+    {
+     "n": 7,
+     "qlinkPage": 1,
+     "knob": 7,
+     "key": "fx_p7",
+     "name": "FX Param 7"
+    },
+    {
+     "n": 8,
+     "qlinkPage": 1,
+     "knob": 8,
+     "key": "fx_p8",
+     "name": "FX Param 8"
+    },
+    {
+     "n": 9,
+     "qlinkPage": 2,
+     "knob": 1,
+     "key": "fx_p9",
+     "name": "FX Param 9"
+    },
+    {
+     "n": 10,
+     "qlinkPage": 2,
+     "knob": 2,
+     "key": "fx_p10",
+     "name": "FX Param 10"
+    },
+    {
+     "n": 11,
+     "qlinkPage": 2,
+     "knob": 3,
+     "key": "fx_p11",
+     "name": "FX Param 11"
+    },
+    {
+     "n": 12,
+     "qlinkPage": 2,
+     "knob": 4,
+     "key": "fx_p12",
+     "name": "FX Param 12"
+    },
+    {
+     "n": 13,
+     "qlinkPage": 2,
+     "knob": 5,
+     "key": "fx_type",
+     "name": "FX Type"
+    },
+    {
+     "n": 14,
+     "qlinkPage": 2,
+     "knob": 6,
+     "key": "fx_sel",
+     "name": "FX Slot"
+    },
+    {
+     "n": 15,
+     "qlinkPage": 2,
+     "knob": 7,
+     "key": "fx_on",
+     "name": "FX On"
+    },
+    {
+     "n": 16,
+     "qlinkPage": 2,
+     "knob": 8,
+     "key": "fx_bypass",
+     "name": "FX Chain"
+    },
+    {
+     "n": 17,
+     "qlinkPage": 3,
+     "knob": 1,
+     "key": "send_1",
+     "name": "Send 1"
+    },
+    {
+     "n": 18,
+     "qlinkPage": 3,
+     "knob": 2,
+     "key": "send_2",
+     "name": "Send 2"
+    },
+    {
+     "n": 19,
+     "qlinkPage": 3,
+     "knob": 3,
+     "key": "send_3",
+     "name": "Send 3"
+    },
+    {
+     "n": 20,
+     "qlinkPage": 3,
+     "knob": 4,
+     "key": "send_4",
+     "name": "Send 4"
+    },
+    {
+     "n": 21,
+     "qlinkPage": 3,
+     "knob": 5,
+     "key": "ret_1",
+     "name": "Return 1"
+    },
+    {
+     "n": 22,
+     "qlinkPage": 3,
+     "knob": 6,
+     "key": "ret_2",
+     "name": "Return 2"
+    },
+    {
+     "n": 23,
+     "qlinkPage": 3,
+     "knob": 7,
+     "key": "ret_3",
+     "name": "Return 3"
+    },
+    {
+     "n": 24,
+     "qlinkPage": 3,
+     "knob": 8,
+     "key": "ret_4",
+     "name": "Return 4"
+    }
+   ]
+  },
+  "patch": {
+   "name": "PATCH",
+   "knobs": [
+    {
+     "n": 1,
+     "qlinkPage": 1,
+     "knob": 1,
+     "key": "macro_1",
+     "name": "Macro 1"
+    },
+    {
+     "n": 2,
+     "qlinkPage": 1,
+     "knob": 2,
+     "key": "macro_2",
+     "name": "Macro 2"
+    },
+    {
+     "n": 3,
+     "qlinkPage": 1,
+     "knob": 3,
+     "key": "macro_3",
+     "name": "Macro 3"
+    },
+    {
+     "n": 4,
+     "qlinkPage": 1,
+     "knob": 4,
+     "key": "macro_4",
+     "name": "Macro 4"
+    },
+    {
+     "n": 5,
+     "qlinkPage": 1,
+     "knob": 5,
+     "key": "macro_5",
+     "name": "Macro 5"
+    },
+    {
+     "n": 6,
+     "qlinkPage": 1,
+     "knob": 6,
+     "key": "macro_6",
+     "name": "Macro 6"
+    },
+    {
+     "n": 7,
+     "qlinkPage": 1,
+     "knob": 7,
+     "key": "macro_7",
+     "name": "Macro 7"
+    },
+    {
+     "n": 8,
+     "qlinkPage": 1,
+     "knob": 8,
+     "key": "macro_8",
+     "name": "Macro 8"
+    },
+    {
+     "n": 9,
+     "qlinkPage": 2,
+     "knob": 1,
+     "key": "patch",
+     "name": "Patch"
+    },
+    {
+     "n": 10,
+     "qlinkPage": 2,
+     "knob": 2,
+     "key": "volume",
+     "name": "Volume"
+    },
+    {
+     "n": 11,
+     "qlinkPage": 2,
+     "knob": 3,
+     "key": "poly_limit",
+     "name": "Poly Limit"
+    },
+    {
+     "n": 12,
+     "qlinkPage": 2,
+     "knob": 4,
+     "key": "portamento",
+     "name": "Portamento"
+    },
+    {
+     "n": 13,
+     "qlinkPage": 2,
+     "knob": 5,
+     "key": "bend_up",
+     "name": "Bend Up"
+    },
+    {
+     "n": 14,
+     "qlinkPage": 2,
+     "knob": 6,
+     "key": "bend_dn",
+     "name": "Bend Down"
+    },
+    {
+     "n": 15,
+     "qlinkPage": 2,
+     "knob": 7,
+     "key": "play_mode",
+     "name": "Play Mode"
+    },
+    {
+     "n": 16,
+     "qlinkPage": 2,
+     "knob": 8,
+     "key": "scene",
+     "name": "Edit Scene"
+    },
+    {
+     "n": 17,
+     "qlinkPage": 3,
+     "knob": 1,
+     "key": "scene_mode",
+     "name": "Scene Mode"
+    },
+    {
+     "n": 18,
+     "qlinkPage": 3,
+     "knob": 2,
+     "key": "split_key",
+     "name": "Split Point"
+    }
+   ]
+  }
+ }
+}

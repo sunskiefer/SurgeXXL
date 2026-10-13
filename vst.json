@@ -1,0 +1,19 @@
+{
+  "name": "SurgeXXL",
+  "vendor": "ANDREALPHEUS",
+  "uid": "AnSx",
+  "version": 1000,
+  "so": "surgexxl.so",
+  "params": "params.json",
+  "layout": "layout.conf",
+  "title_font": "art/fonts/TitilliumWeb-SemiBold.ttf",
+  "nrpn": false,
+  "defines": {
+    "HAS_DISPLAY_REV": 1,
+    "SAMPLE_ACCURATE": 1,
+    "HAS_SONG_POS": 1,
+    "PARAM_TEXT_MAX": 64,
+    "MODULE_SUBDIR": "\"data\"",
+    "CHUNK_MAX": 4194304
+  }
+}

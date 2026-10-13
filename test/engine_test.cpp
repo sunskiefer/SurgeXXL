@@ -168,6 +168,46 @@ void testRoundTrips(void *s) {
   printf("ok   round trips: %d continuous, %d option parameters\n", nc, no);
 }
 
+// What MPC does around a LOAD: the press bumps display_rev, so the host reads every value and value text again on the
+// next poll while the patch is still loading, keeps sending blocks, and the player keeps playing notes (and Q-Links
+// keep moving). A load must survive all of that (2026-10-13: a Force crashed on LOAD; the host's reads raced Surge's
+// own patch-load thread).
+void readAll(void *s) {
+  for (const KeyDef &k : kKeys) {
+    get(s, k.key);
+    std::string d = std::string(k.key) + "_display";
+    get(s, d.c_str());
+  }
+}
+void testLoadWhileHostReads(void *s, int stride) {
+  int total = atoi(get(s, "test_num_patches").c_str()), loads = 0, hung = 0;
+  if (stride <= 0) stride = 97;
+  for (int i = 0; i < total; i += stride) {
+    seti(s, "patch", i);
+    note(s, 60, 100);
+    render(s, 256);
+    set(s, "patch_load", "0");
+    set(s, "patch_load", "1");
+    bool done = false;
+    for (int b = 0; b < 3000 && !done; ++b) {
+      readAll(s);                                  // the host re-reads every page
+      note(s, 62 + (b & 7), b & 1 ? 0 : 90);       // and the pads keep playing
+      setf(s, "macro_1", (b % 10) / 10.0);         // and a Q-Link moves
+      seti(s, "osc_sel", b % 3);
+      render(s, 128);
+      if (b > 2) usleep(500);
+      done = get(s, "patch_name") != "Loading...";
+    }
+    set(s, "patch_load", "0");
+    if (!done) ++hung;
+    ++loads;
+    readAll(s);
+  }
+  note(s, 60, 0);
+  printf("ok   %d loads with the host reading every value and text, playing notes and moving Q-Links meanwhile\n", loads);
+  CHECK(hung == 0, "%d loads never finished", hung);
+}
+
 void testPatches(void *s, int stride) {
   int total = atoi(get(s, "test_num_patches").c_str());
   int loaded = 0, silent = 0, removed = 0, hung = 0;
@@ -356,6 +396,7 @@ int main(int argc, char **argv) {
   render(s, 4410);
   testParams(s);
   testRoundTrips(s);
+  testLoadWhileHostReads(s, stride > 1 ? stride * 7 : 97);
   if (stride > 0) testPatches(s, stride);
   if (fx) testFx(s);
   testWavetables(s, stage);

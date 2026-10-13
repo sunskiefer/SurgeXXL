@@ -1,4 +1,4 @@
-# SurgeXXL v0.1.0
+# SurgeXXL v0.1.1
 
 ![SurgeXXL, its eight pages](docs/img/pages.png)
 
@@ -13,7 +13,7 @@ Force's 32-bit ARM, with eight pages drawn in the look of [InterzoneXXL](https:/
 MPC project.
 
 > [!NOTE]
-> **Status: 0.1.0, not yet tested on a Force.** Every build is tested offline: the engine and mpc-vst-plugins' host
+> **Status: 0.1.1. 0.1.0 crashed the Force on LOAD; 0.1.1 fixes that and is otherwise not yet tested on a Force.** Every build is tested offline: the engine and mpc-vst-plugins' host
 > test on x86, and the Force binary itself under an ARM emulator (see [Testing](#testing)). The first device test
 > decides the voice count a Force can carry (see [CPU](#cpu)). Report anything odd under Issues.
 

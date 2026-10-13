@@ -11,7 +11,7 @@
 // "display_rev" and the wrapper re-reads the values (HAS_DISPLAY_REV).
 //
 // Patches: the browse list is Surge's own (factory, third party, then the user's folder), in Surge's order; LOAD loads
-// the browsed patch on Surge's patch-load thread, SAVE writes the sound as "SurgeXXL NNN" to the user folder.
+// the browsed patch on the plugin's own load thread (nothing else touches the synth meanwhile), SAVE writes the sound as "SurgeXXL NNN" to the user folder.
 // Wavetables: the selected oscillator's table is picked from Surge's list (factory, third party, the user's
 // Wavetables folder); wt_pic tells the skin which picture to show (factory and third-party tables have one).
 // The user folder is "SurgeXXL" next to the "Synths" folder the plugin is installed in (/sdcard/SurgeXXL on a Force):
@@ -28,7 +28,9 @@
 #include <string.h>
 
 #include <algorithm>
+#include <atomic>
 #include <string>
+#include <thread>
 #include <unordered_map>
 #include <vector>
 
@@ -134,7 +136,15 @@ struct Inst : public SurgeSynthesizer::PluginLayer {
   int browse = 0;                       // patch browse position in patchOrder
   std::vector<int> patchOrder, wtOrder; // Surge's orderings with the user's own first (the knob reaches them)
   std::string loadedPath, loadedName = "Init";
+  // LOAD runs Surge's loadPatch on our own thread. While it runs nothing else touches the synth: render() plays
+  // silence, set() and MIDI are dropped and get() answers from textCache (the last answer per key). The wrapper
+  // serializes every engine call, so `loading` is only read and written under its lock; the loader thread only sets
+  // loadDone. (Surge's own patch-load thread let the host's reads, notes and Q-Links run into the half-loaded patch:
+  // a Force crashed on LOAD, 2026-10-13; test/engine_test.cpp testLoadWhileHostReads under ThreadSanitizer.)
   bool loading = false;
+  std::thread loader;
+  std::atomic<bool> loadDone{false};
+  std::unordered_map<std::string, std::string> textCache;
   int modSlot = 0;                      // 0-based; == count: a new routing
   int modNewSrc = ms_lfo1;              // the source a new routing gets
   bool learn = false;
@@ -233,8 +243,7 @@ struct Inst : public SurgeSynthesizer::PluginLayer {
 
   ~Inst() {
     if (synth) {
-      // let a patch load in flight finish first (its thread holds Surge's load lock)
-      for (int i = 0; i < 400 && (synth->patchid_queue >= 0 || synth->has_patchid_file); ++i) synth->process();
+      if (loader.joinable()) loader.join();     // a load in flight finishes first
       delete synth;
     }
   }
@@ -269,12 +278,26 @@ struct Inst : public SurgeSynthesizer::PluginLayer {
   }
   void loadBrowsed() {
     int id = patchAt(browse);
-    if (id < 0) return;
+    if (id < 0 || loading) return;
     loadedPath = synth->storage.patch_list[id].path.generic_string();
     loadedName = synth->storage.patch_list[id].name;
+    if (loader.joinable()) loader.join();
     loading = true;
-    synth->patchid_queue = id;
+    loadDone = false;
+    loader = std::thread([this, id] {
+      synth->stopSound();
+      synth->loadPatch(id);
+      synth->storage.getPatch().isDirty = false;
+      loadDone = true;
+    });
     bump();
+  }
+  // called under the wrapper's lock: a finished load hands the synth back
+  void finishLoad(bool wait) {
+    if (!loading || !(wait || loadDone)) return;
+    if (loader.joinable()) loader.join();
+    synth->patchChanged = false;
+    afterPatchLoad();
   }
   void stepCategory(int dir) {
     int n = numPatches();
@@ -488,14 +511,18 @@ struct Inst : public SurgeSynthesizer::PluginLayer {
 
   // ---- set ----
   void set(const char *key, const char *val) {
-    if (!strcmp(key, "state")) return setState(val);
+    if (!strcmp(key, "state")) {
+      finishLoad(true);
+      return setState(val);
+    }
+    finishLoad(false);
+    if (loading) return;                       // the load owns the synth (a Q-Link moved meanwhile is dropped)
     if (!strcmp(key, "lfo_bpm")) return;
     auto it = keyIndex().find(key);
     if (it == keyIndex().end()) return;
     int i = it->second;
     const KeyDef &k = kKeys[i];
     float v = (float)atof(val);
-    if (loading && k.bind != B_ENGINE) return;          // Surge's load thread owns the patch
     if (k.bind != B_ENGINE) {
       Parameter *p = resolve(k);
       if (!p) return;
@@ -576,6 +603,18 @@ struct Inst : public SurgeSynthesizer::PluginLayer {
     if (len <= 0) return 0;
     buf[0] = 0;
     if (!strcmp(key, "display_rev")) return snprintf(buf, len, "%u", rev);
+    if (!strcmp(key, "state")) return getState(buf, len);
+    finishLoad(false);
+    if (loading) {                             // the last answers, until the load is done
+      if (!strncmp(key, "patch_name", 10)) return put(buf, len, "Loading...");
+      auto c = textCache.find(key);
+      return c == textCache.end() ? 0 : put(buf, len, c->second);
+    }
+    int n = getNow(key, buf, len);
+    if (n > 0) textCache[key].assign(buf);
+    return n;
+  }
+  int getNow(const char *key, char *buf, int len) {
     if (!strcmp(key, "state")) return getState(buf, len);
     if (!strcmp(key, "test_removed_fx")) return snprintf(buf, len, "%d", removedFx);
     if (!strcmp(key, "test_user_dir")) return put(buf, len, userDir);
@@ -705,6 +744,7 @@ struct Inst : public SurgeSynthesizer::PluginLayer {
 
   // ---- state ----
   int getState(char *buf, int len) {
+    finishLoad(false);
     if (loading) return 0;
     void *data = nullptr;
     unsigned n = synth->saveRaw(&data);
@@ -735,7 +775,6 @@ struct Inst : public SurgeSynthesizer::PluginLayer {
     size_t sp = body.find(" STEPS");
     if (sp != std::string::npos) steps = body.substr(sp + 6), body.resize(sp);
     if (!b64dec(body.c_str(), raw) || raw.empty()) return;
-    for (int i = 0; i < 400 && (synth->patchid_queue >= 0 || synth->has_patchid_file); ++i) synth->process();
     synth->loadRaw(raw.data(), (int)raw.size(), false);
     osc = clampi(o, 0, n_oscs - 1);
     lfo = clampi(l, 0, 5);
@@ -773,7 +812,7 @@ struct Inst : public SurgeSynthesizer::PluginLayer {
 
   // ---- MIDI ----
   void midi(const uint8_t *m, int n) {
-    if (n < 1) return;
+    if (n < 1 || loading) return;              // the load stops every voice anyway
     int st = m[0] & 0xf0, ch = m[0] & 0x0f;
     int d1 = n > 1 ? m[1] & 0x7f : 0, d2 = n > 2 ? m[2] & 0x7f : 0;
     switch (st) {
@@ -796,6 +835,7 @@ struct Inst : public SurgeSynthesizer::PluginLayer {
   // ---- audio ----
   void songPos(double p, double b, int play, int nframes) {
     (void)nframes;
+    if (loading) return;
     if (b > 0) bpm = b;
     playing = play;
     ppq = p;
@@ -816,6 +856,12 @@ struct Inst : public SurgeSynthesizer::PluginLayer {
   void render(int16_t *out, int n) {
     ScopedDenormalDisable ftz;
     if ((int)bufL.size() < n) bufL.resize(n), bufR.resize(n);
+    finishLoad(false);
+    if (loading) {                             // silence while the patch loads
+      memset(out, 0, sizeof(int16_t) * 2 * n);
+      frames += n;
+      return;
+    }
     for (int i = 0; i < n; ++i) {
       if (outPos >= BLOCK_SIZE) surgeBlock();
       bufL[i] = outL[outPos];

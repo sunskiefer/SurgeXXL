@@ -3,12 +3,12 @@
 #   ./build.sh                 the plugin folder in build/package/
 #   ./build.sh --skin-only     just the skin (build/skin/), to look at with test/preview.sh
 # Needs: python3 + Pillow + cairosvg, cmake + ninja, a host gcc (for shadow_art), and Zig (pip install ziglang).
-# No Docker. Output: build/package/ANDREALPHEUS - VST - SurgeXXL/ (skin, surgexxl.so and Surge's data folder).
+# No Docker. Output: build/package/L'Cronx - VST - SurgeXXL/ (skin, surgexxl.so and Surge's data folder).
 # Set SXXL_WT_PICTURES=0 to build without the 761 wavetable pictures (a lighter skin, if MPC finds it too heavy).
 set -euo pipefail
 cd "$(dirname "$0")"
 MPC_VST="${MPC_VST:-$PWD/third_party/mpc-vst-plugins}"
-NAME="ANDREALPHEUS - VST - SurgeXXL"
+NAME="L'Cronx - VST - SurgeXXL"
 JOBS="${JOBS:-$(nproc 2>/dev/null || echo 2)}"
 
 python3 tools/gen_params.py

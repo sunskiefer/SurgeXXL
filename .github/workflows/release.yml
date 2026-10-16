@@ -28,7 +28,8 @@ jobs:
         run: ./build.sh
       - name: Package
         run: |
-          P="build/package/ANDREALPHEUS - VST - SurgeXXL"
+          P="build/package/L'Cronx - VST - SurgeXXL"
+          python3 tools/release_quotes.py third_party/mpc-vst-plugins
           python3 third_party/mpc-vst-plugins/tools/release.py --so "$P/surgexxl.so" --skin "$P" \
             --entry build/pluginlist-entry.xml --version "$VERSION" --id surgexxl --repo sunskiefer/SurgeXXL \
             --license GPL-3.0-or-later -o dist \

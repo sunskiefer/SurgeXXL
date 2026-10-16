@@ -89,7 +89,7 @@ Change the order with the **SurgeXXL Q-Link Map** (number the controls on a pict
 ```
 git clone --recursive https://github.com/sunskiefer/SurgeXXL && cd SurgeXXL
 pip install ziglang Pillow cairosvg       # plus cmake, ninja and a host gcc
-./build.sh                                # -> build/package/ANDREALPHEUS - VST - SurgeXXL/
+./build.sh                                # -> build/package/L'Cronx - VST - SurgeXXL/
 ```
 No Docker. `SXXL_WT_PICTURES=0 ./build.sh` builds without the wavetable pictures (a lighter skin).
 Releases: mpc-vst-plugins' `tools/release.py` (docs/RELEASING.md there), license `GPL-3.0-or-later`.

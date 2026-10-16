@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.3
+- Packed under **L'Cronx**: the plugin folder is now `L'Cronx - VST - SurgeXXL` and MPC lists the maker as L'Cronx. Nothing else
+  changed from 0.1.2. If you installed 0.1.2, run its `uninstall.sh` first (copy out anything you saved inside the plugin
+  folder), then install 0.1.3. The installer handles the ' in the folder name.
+
 ## 0.1.2
 - Q-Links in the order of your SurgeXXL Q-Link Map (qlinks.json): MIXER's mute, solo and route rows on their own
   Q-Link pages with Ring 1x2 / 2x3 included, FILTER's types and subtypes beside their filter, the envelope shapes on

@@ -70,6 +70,7 @@ void seti(void *s, const char *k, int v) {
   snprintf(b, sizeof b, "%d", v);
   set(s, k, b);
 }
+int geti(void *s, const char *k) { return atoi(get(s, k).c_str()); }
 
 struct Audio {
   double peak = 0, sumsq = 0;
@@ -352,14 +353,40 @@ void testWavetables(void *s, const std::string &stage) {
 }
 
 void testSave(void *s) {
+  // SAVE writes "<loaded patch> - SurgeXXL NNN" (0.3.0): the loaded name, then a number that counts up per name
   int before = atoi(get(s, "test_num_patches").c_str());
+  std::string loaded = get(s, "patch_name");
+  CHECK(!loaded.empty() && loaded != "Loading...", "no loaded patch before SAVE");
   tap(s, "patch_save");
-  std::string file = get(s, "test_user_dir") + "/Patches/SurgeXXL/SurgeXXL 001.fxp";
+  std::string want = loaded + " - SurgeXXL 001";
+  std::string file = get(s, "test_user_dir") + "/Patches/SurgeXXL/" + want + ".fxp";
   CHECK(exists(file), "SAVE wrote no %s", file.c_str());
   CHECK(atoi(get(s, "test_num_patches").c_str()) == before + 1, "the saved patch is not in the list");
-  CHECK(get(s, "patch_name") == "SurgeXXL 001", "loaded name after SAVE: %s", get(s, "patch_name").c_str());
-  CHECK(get(s, "patch_browse") == "SurgeXXL 001", "browse after SAVE: %s", get(s, "patch_browse").c_str());
-  printf("ok   SAVE writes SurgeXXL 001 to the user folder and browses to it\n");
+  CHECK(get(s, "patch_name") == want, "loaded name after SAVE: %s", get(s, "patch_name").c_str());
+  CHECK(get(s, "patch_browse") == want, "browse after SAVE: %s", get(s, "patch_browse").c_str());
+  tap(s, "patch_save");                   // saving a save keeps the base name and counts up
+  std::string want2 = loaded + " - SurgeXXL 002";
+  CHECK(get(s, "patch_name") == want2, "second SAVE: %s", get(s, "patch_name").c_str());
+  printf("ok   SAVE writes \"%s\" then 002 to the user folder and browses to it\n", want.c_str());
+}
+
+// STEP SEQ ON: the selected LFO's shape becomes Step Seq and seq_info says so, then (no routing yet) says to ROUTE;
+// after LEARN + a touched control the info counts the routing
+void testSeq(void *s) {
+  seti(s, "lfo_sel", 1);
+  seti(s, "lfo_shape", 0);              // Sine
+  std::string info = get(s, "seq_info");
+  CHECK(info.find("LFO 2") == 0 && info.find("Sine") != std::string::npos, "seq_info before: %s", info.c_str());
+  tap(s, "seq_on");
+  CHECK(geti(s, "lfo_shape") == 7, "STEP SEQ ON did not set Step Seq (shape %d)", geti(s, "lfo_shape"));
+  info = get(s, "seq_info");
+  CHECK(info.find("modulates nothing") != std::string::npos, "seq_info after ON: %s", info.c_str());
+  tap(s, "mod_learn");
+  setf(s, "f1_cutoff", 0.5);           // the touched control becomes the target
+  render(s, 128);
+  info = get(s, "seq_info");
+  CHECK(info.find("1 routing") != std::string::npos, "seq_info after ROUTE: %s", info.c_str());
+  printf("ok   STEP SEQ ON + ROUTE: %s\n", info.c_str());
 }
 
 void testState(void *s, const char *dataDir) {
@@ -437,6 +464,7 @@ int main(int argc, char **argv) {
   if (fx) testFx(s);
   testWavetables(s, stage);
   testSave(s);
+  testSeq(s);
   testMod(s);
   testState(s, data.c_str());
   E->destroy(s);

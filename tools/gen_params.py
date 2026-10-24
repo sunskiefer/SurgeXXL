@@ -258,6 +258,10 @@ P += [
 # MACROS (Surge's 8 macro controls, with the patch's own names)
 P += [eng_num("macro_%d" % (i + 1), "Macro %d" % (i + 1), 0.0, 1.0, 0.0) for i in range(8)]
 P += [readout("macro_%d_name" % (i + 1), "Macro %d Name" % (i + 1)) for i in range(8)]
+# ---- 0.3.0 (appended: params.lock keeps the order of the keys above) -----------------------------------------------
+# STEP SEQ: one button makes the selected LFO play the steps (its shape becomes Step Seq), and a line says what it
+# does and whether it is routed anywhere (an LFO modulates nothing until it is)
+P += [trigger("seq_on", "Step Seq On"), readout("seq_info", "Step Seq Info")]
 
 # ---- checks --------------------------------------------------------------------------------------------------------
 keys = [p["key"] for p in P]

@@ -189,4 +189,6 @@
 #define P_MACRO_6_NAME 186
 #define P_MACRO_7_NAME 187
 #define P_MACRO_8_NAME 188
-#define P_COUNT 189
+#define P_SEQ_ON 189
+#define P_SEQ_INFO 190
+#define P_COUNT 191

@@ -189,3 +189,5 @@
 {"macro_6_name", B_ENGINE, "", 0, {}, 0.0f, 1.0f},
 {"macro_7_name", B_ENGINE, "", 0, {}, 0.0f, 1.0f},
 {"macro_8_name", B_ENGINE, "", 0, {}, 0.0f, 1.0f},
+{"seq_on", B_ENGINE, "", 0, {}, 0.0f, 1.0f},
+{"seq_info", B_ENGINE, "", 0, {}, 0.0f, 1.0f},

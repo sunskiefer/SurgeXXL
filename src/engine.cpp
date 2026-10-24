@@ -356,12 +356,21 @@ struct Inst : public SurgeSynthesizer::PluginLayer {
     fs::path dir = fs::path(userDir) / "Patches" / "SurgeXXL";
     std::error_code ec;
     fs::create_directories(dir, ec);
+    // "<loaded patch> - SurgeXXL NNN" (no text entry on MPC: the loaded patch's name, Init included, tells the saves
+    // apart); NNN counts up to 999 per name. A name that was already a save keeps its base ("Lead - SurgeXXL 002").
+    std::string base = loadedName.empty() ? std::string("Init") : loadedName;
+    size_t mark = base.rfind(" - SurgeXXL ");
+    if (mark != std::string::npos) base.resize(mark);
+    for (char &ch : base)
+      if (ch == '/' || ch == '\\' || ch == ':' || ch == '*' || ch == '?' || ch == '"' || ch == '<' || ch == '>' || ch == '|') ch = '-';
+    if (base.size() > 40) base.resize(40);
     int n = 1;
-    char name[64];
+    char name[96];
     for (; n < 1000; ++n) {
-      snprintf(name, sizeof name, "SurgeXXL %03d", n);
+      snprintf(name, sizeof name, "%s - SurgeXXL %03d", base.c_str(), n);
       if (!fs::exists(dir / (std::string(name) + ".fxp"), ec)) break;
     }
+    if (n >= 1000) return;                   // 999 saves of this name: nothing is overwritten
     patch().name = name;
     patch().category = "SurgeXXL";
     fs::path file = dir / (std::string(name) + ".fxp");
@@ -459,6 +468,36 @@ struct Inst : public SurgeSynthesizer::PluginLayer {
     bump();
   }
 
+  // ---- step sequencer (the selected LFO's) ----
+  LFOStorage &lfoData() { return patch().scene[scene()].lfo[lfoIndex()]; }
+  const char *lfoLabel() {
+    static const char *names[6] = {"LFO 1", "LFO 2", "LFO 3", "S-LFO 1", "S-LFO 2", "S-LFO 3"};
+    return names[clampi(lfo, 0, 5)];
+  }
+  // STEP SEQ ON: the selected LFO's shape becomes Step Seq (that is what plays the steps)
+  void seqOn() {
+    setInt(&lfoData().shape, lt_stepseq);
+    modNewSrc = ms_lfo1 + lfoIndex();        // a NEW routing made next (LEARN past the last one) comes from this LFO
+    modSlot = (int)modSlots().size();        // ... so LEARN on the STEP SEQ page routes the steps, not an old slot
+    bump();
+  }
+  // how many routings use the selected LFO as a source (an LFO that modulates nothing is silent)
+  int lfoRoutings() {
+    int src = ms_lfo1 + lfoIndex(), n = 0;
+    for (const ModSlot &m : modSlots())
+      if (m.src == src) ++n;
+    return n;
+  }
+  std::string seqInfo() {
+    std::string out = lfoLabel();
+    if (lfoData().shape.val.i != lt_stepseq) return out + ": shape is " + lfoData().shape.get_display() + ". Press STEP SEQ ON to play the steps.";
+    int n = lfoRoutings();
+    if (n == 0) return out + " plays the steps, but modulates nothing yet: ROUTE, then touch the control it should move.";
+    char t[64];
+    snprintf(t, sizeof t, " plays the steps into %d routing%s.", n, n == 1 ? "" : "s");
+    return out + t;
+  }
+
   // ---- modulation ----
   std::vector<ModSlot> modSlots() {
     std::vector<ModSlot> out;
@@ -508,7 +547,7 @@ struct Inst : public SurgeSynthesizer::PluginLayer {
     switch (i) {
       case P_WT_PREV: case P_WT_NEXT: case P_WT_CAT_PREV: case P_WT_CAT_NEXT: case P_WT_RESCAN:
       case P_PATCH_PREV: case P_PATCH_NEXT: case P_CAT_PREV: case P_CAT_NEXT: case P_PATCH_LOAD: case P_PATCH_SAVE:
-      case P_PANIC: case P_MOD_LEARN: case P_MOD_CLEAR:
+      case P_PANIC: case P_MOD_LEARN: case P_MOD_CLEAR: case P_SEQ_ON:
         return true;
       default:
         return false;
@@ -537,6 +576,7 @@ struct Inst : public SurgeSynthesizer::PluginLayer {
       case P_PATCH_SAVE: savePatch(); break;
       case P_PANIC: synth->allNotesOff(); break;
       case P_MOD_LEARN: learn = !learn; modMsg = learn ? "Touch a control to modulate" : ""; bump(); break;
+      case P_SEQ_ON: seqOn(); break;
       case P_MOD_CLEAR: {
         ModSlot m;
         if (currentMod(m)) synth->clearModulation(m.ptag, (modsources)m.src, m.srcScene, m.index, true);
@@ -747,6 +787,7 @@ struct Inst : public SurgeSynthesizer::PluginLayer {
         return put(buf, len, currentMod(m) ? paramName(m.ptag) : std::string("(none: LEARN a target)"));
       }
       case P_MOD_INFO: return put(buf, len, modMsg);
+      case P_SEQ_INFO: return put(buf, len, seqInfo());
       case P_PATCH: {
         if (disp) {
           int id = patchAt(browse);

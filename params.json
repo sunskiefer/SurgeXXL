@@ -1850,6 +1850,24 @@
    "default": 0.0,
    "display": "string",
    "type": "readout"
+  },
+  {
+   "key": "seq_on",
+   "name": "Step Seq On",
+   "min": 0.0,
+   "max": 1.0,
+   "momentary": true,
+   "type": "trigger",
+   "default": 0.0
+  },
+  {
+   "key": "seq_info",
+   "name": "Step Seq Info",
+   "min": 0.0,
+   "max": 1.0,
+   "default": 0.0,
+   "display": "string",
+   "type": "readout"
   }
  ]
 }

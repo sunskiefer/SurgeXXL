@@ -42,6 +42,10 @@ SEG_OFF = (0x1c, 0x1c, 0x1c)
 INK = (255, 255, 255)
 INK_DIM = (0xcf, 0xcf, 0xcf)
 VALUE_COLOUR = "ffcfcfcf"
+VALUE_SIZE = 20             # live value text (0.3.0: the same size as every name)
+HEADER_SIZE = 20
+STRIP_SIZE = 20             # the per-type parameter names under sliders / knobs
+KNOB_MAX = 96               # 128 frames of 96 px: the largest knob strip MPC animates right (docs/NOTES.md)
 LCD_FILL = (0x12, 0x12, 0x12)
 ROGAN_SWEEP = 0.83 * math.pi
 WT_PICTURES = os.environ.get("SXXL_WT_PICTURES", "1") != "0"
@@ -115,8 +119,8 @@ def draw_art(d, item):
         d.text(((x + w / 2) * SS, y * SS), title, font=f, fill=(0x11, 0x11, 0x11), anchor="mm")
     elif kind == "header":
         _, x, y, w, s = item
-        text_at(d, x, y, w, s, 17, INK, "left")
-        d.rectangle((x * SS, (y + 26) * SS, (x + w) * SS, (y + 27) * SS - 1), fill=INK)
+        text_at(d, x, y, w, s, HEADER_SIZE, INK, "left")
+        d.rectangle((x * SS, (y + 28) * SS, (x + w) * SS, (y + 29) * SS - 1), fill=INK)
     elif kind == "text":
         _, x, y, w, s, size, colour, align = item
         text_at(d, x, y, w, s, size, colour, align)
@@ -202,22 +206,57 @@ def slider_frames(page_img, c):
 
 
 def knob_frames(page_img, c, nopts):
+    """128 square frames (numFrames 127), the device-checked knob strip; an option knob snaps each frame to the
+    nearest option's angle, so it turns like a switch and the strip is still the verified shape"""
     s = c["s"]
+    assert s <= KNOB_MAX, "%s: a %d px knob makes a strip MPC cannot animate (max %d)" % (c["key"], s, KNOB_MAX)
     box = (c["cx"] - s / 2, c["cy"] - s / 2, s, s)
     base = crop(page_img, box)
     layers = [svg(art("valley", p), s * SS, s * SS) for p in KNOB]
-    if c.get("detents"):
-        values = [i / float(nopts - 1) for i in range(nopts)]
-    else:
-        n = max(16, min(128, MAX_STRIP // int(s)))
-        values = [i / float(n - 1) for i in range(n)]
+    n = 128
     frames = []
-    for v in values:
+    for i in range(n):
+        v = i / float(n - 1)
+        if c.get("detents") and nopts > 1:
+            v = round(v * (nopts - 1)) / float(nopts - 1)
         cell = base.copy()
         angle = -ROGAN_SWEEP + 2 * ROGAN_SWEEP * v
         paste(cell, layers[0], 0, 0)
         paste(cell, layers[1].rotate(-math.degrees(angle), resample=Image.BICUBIC), 0, 0)
         paste(cell, layers[2], 0, 0)
+        frames.append(down(cell, s, s))
+    return box, frames
+
+
+def wheel_image(s):
+    """a data wheel: a dark ribbed disc with a lighter rim and one marker dot (drawn at SS)"""
+    img = Image.new("RGBA", (s * SS, s * SS), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    r = s * SS / 2
+    d.ellipse((0, 0, s * SS - 1, s * SS - 1), fill=(0x16, 0x16, 0x16))
+    d.ellipse((3 * SS, 3 * SS, s * SS - 3 * SS, s * SS - 3 * SS), fill=(0x3a, 0x3a, 0x3a))
+    d.ellipse((8 * SS, 8 * SS, s * SS - 8 * SS, s * SS - 8 * SS), fill=(0x24, 0x24, 0x24))
+    for i in range(24):                       # the ribs on the rim
+        a = i * 2 * math.pi / 24
+        x0, y0 = r + (r - 8 * SS) * math.sin(a), r - (r - 8 * SS) * math.cos(a)
+        x1, y1 = r + (r - 3.5 * SS) * math.sin(a), r - (r - 3.5 * SS) * math.cos(a)
+        d.line((x0, y0, x1, y1), fill=(0x18, 0x18, 0x18), width=int(1.6 * SS))
+    d.ellipse((14 * SS, 14 * SS, s * SS - 14 * SS, s * SS - 14 * SS), fill=(0x2c, 0x2c, 0x2c), outline=(0x1a, 0x1a, 0x1a), width=SS)
+    m = 4 * SS
+    d.ellipse((r - m, 16 * SS, r + m, 16 * SS + 2 * m), fill=ORANGE)   # the marker, at 12 o'clock in frame 0
+    return img
+
+
+def wheel_frames(page_img, c):
+    """a data wheel turns one full revolution over its list (128 frames); its text says where it is"""
+    s = c["s"]
+    box = (c["cx"] - s / 2, c["cy"] - s / 2, s, s)
+    base = crop(page_img, box)
+    disc = wheel_image(s)
+    frames = []
+    for i in range(128):
+        cell = base.copy()
+        paste(cell, disc.rotate(-i * 360.0 / 128, resample=Image.BICUBIC), 0, 0)
         frames.append(down(cell, s, s))
     return box, frames
 
@@ -441,7 +480,7 @@ def build_page(sk, t):
         if c["kind"] == "slider" and c.get("label"):
             bw, bh, _, _, _ = slider_geom(c)
             text_at(d, c["x"] - 30, c["y"] + bh + 6, bw + 60, c["label"], c["fs"], INK)
-        elif c["kind"] == "knob" and c.get("label"):
+        elif c["kind"] in ("knob", "wheel") and c.get("label"):
             text_at(d, c["cx"] - 80, c["cy"] + c["s"] / 2 + 4, 160, c["label"], c["fs"], INK)
     # placements: key -> (defn key, outer bounds)
     placed = {}
@@ -459,7 +498,7 @@ def build_page(sk, t):
         """the value text's width: up to the default, never reaching the next control on the same row"""
         cx, best = centre_x(c), 10000
         for o in cs:
-            if o is c or o["kind"] not in ("slider", "knob") or not o.get("value", True):
+            if o is c or o["kind"] not in ("slider", "knob", "wheel") or not o.get("value", True):
                 continue
             if abs(row_y(o) - row_y(c)) < 40:
                 best = min(best, abs(centre_x(o) - cx))
@@ -469,15 +508,18 @@ def build_page(sk, t):
         """where the value text goes (page px), or None"""
         if not c.get("value", True):
             return None
+        if c.get("vrect"):
+            return c["vrect"]
         x, y, w, h = box
+        vh = c.get("value_size", VALUE_SIZE) + 6
         if c["kind"] == "slider":
             vw = min(c.get("vw", w + 50), room(c))
             ly = y + h + (6 + c["fs"] + 4 if c.get("label") or c.get("labels_by") else 6)
-            return (x + w / 2 - vw / 2, ly + c.get("value_dy", 0), vw, 22)
-        if c["kind"] == "knob":
+            return (x + w / 2 - vw / 2, ly + c.get("value_dy", 0), vw, vh)
+        if c["kind"] in ("knob", "wheel"):
             vw = min(c.get("vw", w + 30), room(c))
             ly = y + h + (4 + c["fs"] + 4 if c.get("label") or c.get("labels_by") else 2)
-            return (x + w / 2 - vw / 2, ly + c.get("value_dy", 0), vw, 22)
+            return (x + w / 2 - vw / 2, ly + c.get("value_dy", 0), vw, vh)
         return None
 
     def place_film(c, box, frames, numframes, value):
@@ -503,7 +545,7 @@ def build_page(sk, t):
         comps.append(film)
         if vr:
             colour = c.get("value_colour", VALUE_COLOUR)
-            comps.append(label_comp("Value", vr[0] - ox0, vr[1] - oy0, vr[2], vr[3], colour, c.get("value_size", 17)))
+            comps.append(label_comp("Value", vr[0] - ox0, vr[1] - oy0, vr[2], vr[3], colour, c.get("value_size", VALUE_SIZE)))
         key = "sx_%d_%s" % (t, c["key"])
         sk.add_def(key, comps, tmpl)
         placed[c["key"]] = (key, (ox0, oy0, ox1 - ox0, oy1 - oy0))
@@ -538,7 +580,16 @@ def build_page(sk, t):
             place_film(c, box, frames, len(frames), value_rect(c, box))
         elif k == "knob":
             box, frames = knob_frames(page, c, nopts)
-            place_film(c, box, frames, len(frames) - 1 if not c.get("detents") else len(frames), value_rect(c, box))
+            place_film(c, box, frames, len(frames) - 1, value_rect(c, box))
+        elif k == "wheel":
+            box, frames = wheel_frames(page, c)
+            place_film(c, box, frames, len(frames) - 1, value_rect(c, box))
+        elif k == "tbtn":
+            fill, ink, fill_on, ink_on = STYLES["dark"][0], STYLES["dark"][1], ORANGE, (17, 17, 17)
+            off = button_image(c["w"], c["h"], c["text"], c["fs"], fill, ink)
+            on = button_image(c["w"], c["h"], c["text"], c["fs"], fill_on, ink_on)
+            placed[c["key"]] = ("switch", (sk.save(off, "sx_%d_%s_off.png" % (t, c["key"])),
+                                           sk.save(on, "sx_%d_%s_on.png" % (t, c["key"]))), (c["x"], c["y"], c["w"], c["h"]))
         elif k == "fader":
             box, frames = fader_frames(page, c)
             vr = None
@@ -585,7 +636,7 @@ def build_page(sk, t):
         for i, c in enumerate(group):
             if c["kind"] == "slider":
                 bw, bh, _, _, _ = slider_geom(c)
-                cx, ly, maxw = c["x"] + bw / 2, c["y"] + bh + 6, 86
+                cx, ly, maxw = c["x"] + bw / 2, c["y"] + bh + 6, 88
             else:
                 cx, ly, maxw = c["cx"], c["cy"] + c["s"] / 2 + 4, 120
             rows.setdefault(ly, []).append((i, cx, maxw))
@@ -594,9 +645,9 @@ def build_page(sk, t):
         for o in range(n):
             for ly, items in rows.items():
                 xs = [cx for _, cx, _ in items]
-                rect = (min(xs) - 64, ly, max(xs) - min(xs) + 128, 22)
+                rect = (min(xs) - 64, ly, max(xs) - min(xs) + 128, 26)
                 img = label_strip(page, rect, [(cx, names[o][i] if i < len(names[o]) else "", maxw)
-                                               for i, cx, maxw in items], 16)
+                                               for i, cx, maxw in items], STRIP_SIZE)
                 name = sk.save(img, "sx_%d_%s_lbl_%d_%d.png" % (t, by, o, int(ly)))
                 pics.append((name, rect[0], rect[1], rect[2], rect[3],
                              ["IndexedEnabling/%d/%d/Parameter %d" % (o, n, pidx)]))
@@ -692,9 +743,9 @@ def restyle_popups(sk):
             btn = find_sub(d, "Button")
             w, h = [int(v) for v in btn["bounds"]["bounds"].split()[2:]]
             data = btn["componentData"]["data"]
-            data["offImage"] = sk.save(button_image(w, h, label, 15, SEG_OFF, INK_DIM),
+            data["offImage"] = sk.save(button_image(w, h, label, 20, SEG_OFF, INK_DIM),
                                        "sx_po_%s_%s_%s_off.png" % (tab, pkey, i))
-            data["onImage"] = sk.save(button_image(w, h, label, 15, ORANGE, (17, 17, 17)),
+            data["onImage"] = sk.save(button_image(w, h, label, 20, ORANGE, (17, 17, 17)),
                                       "sx_po_%s_%s_%s_on.png" % (tab, pkey, i))
             n += 1
         elif key.startswith("shPopPanel_"):
@@ -707,7 +758,7 @@ def restyle_popups(sk):
             lab = find_sub(d, "Label")
             if lab:
                 ts = lab["componentData"]["data"]["textStyle"]
-                ts["colour"], ts["font"]["height"] = "fffb9013", 22.0
+                ts["colour"], ts["font"]["height"] = "fffb9013", 26.0
     return n
 
 

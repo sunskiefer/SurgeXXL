@@ -113,6 +113,27 @@ def line(tab, x, y, w, h, colour=(0x3e, 0x3e, 0x3e)):
     ART[tab].append(("line", x, y, w, h, colour))
 
 
+# ------------------------------------------------------------------------------------------------------ sizes (0.3.0)
+# One size system, so every page reads the same on the 7" screen: FS for names, values and buttons, FS_S the smallest
+# lettering anywhere (never below 18), FS_L for the big readouts. Knobs are at most KNOB px across (a 128-frame strip of
+# 96 px frames is the largest MPC animates right, docs/NOTES.md), and the lists (wavetable, patch, routing) are data
+# wheels of that size.
+FS, FS_S, FS_L = 20, 18, 26
+KNOB, KNOB_S, WHEEL = 96, 76, 96
+SL = 2.6              # Valley slider scale: 59 x 227 px
+
+
+def wheel(tab, key, cx, cy, label="", **kw):
+    """a data wheel (a long list stepped one entry per click): a ribbed grey wheel, no value arc"""
+    kw.setdefault("value", False)
+    return add(tab, "wheel", key, cx=cx, cy=cy, s=WHEEL, label=label, fs=FS, **kw)
+
+
+def tbtn(tab, key, x, y, w, h, text, fs=FS):
+    """an Off/On option as one button with its name inside (dark off, orange on)"""
+    return add(tab, "tbtn", key, x=x, y=y, w=w, h=h, text=text, fs=fs)
+
+
 # ---------------------------------------------------------------------------------------------------------- 0 OSC
 T = 0
 frame(T, 12, 26, 1256, 590, "OSCILLATORS")
@@ -121,35 +142,27 @@ line(T, 946, 52, 2, 540)
 header(T, 36, 50, 210, "OSC")
 seg(T, "osc_sel", grid(36, 86, 66, 50, 3, 3), fs=26)
 header(T, 36, 150, 210, "TYPE")
-seg(T, "osc_type", grid(36, 186, 102, 36, 2, 12), fs=15)
-add(T, "ckss", "osc_keytrack", x=62, y=466, k=3)
-add(T, "ckss", "osc_retrig", x=168, y=466, k=3)
-text(T, 26, 442, 120, "On", 14, (0xcf, 0xcf, 0xcf))
-text(T, 132, 442, 120, "On", 14, (0xcf, 0xcf, 0xcf))
-text(T, 26, 534, 120, "Keytrack", 18)
-text(T, 132, 534, 120, "Retrigger", 18)
-# the wavetable: name and folder, its picture, browsing
+seg(T, "osc_type", grid(36, 186, 102, 38, 2, 12), fs=FS)
+tbtn(T, "osc_keytrack", 36, 474, 102, 48, "KEY\nTRACK", fs=FS_S)
+tbtn(T, "osc_retrig", 144, 474, 102, 48, "RETRIG", fs=FS_S)
+# the wavetable: name and folder, its picture (wider), browsing
 lcd(T, 292, 52, 636, 140)
-readout(T, "wt_name", 304, 62, 410, 40, size=26)
-readout(T, "wt_folder", 304, 108, 410, 26, size=15, colour="c97a1c")
-add(T, "picture", "wt_pic", x=720, y=58, w=200, h=128)
-button(T, "wt_prev", 292, 202, 58, 40, "<")
-button(T, "wt_next", 356, 202, 58, 40, ">")
-button(T, "wt_cat_prev", 420, 202, 120, 40, "< FOLDER", fs=15)
-button(T, "wt_cat_next", 546, 202, 120, 40, "FOLDER >", fs=15)
-button(T, "wt_rescan", 672, 202, 110, 40, "RESCAN", fs=15)
-knob(T, "wt", 868, 222, 44, "", value=False)
-text(T, 800, 248, 136, "TABLE", 13, (0xcf, 0xcf, 0xcf))
+readout(T, "wt_name", 304, 58, 300, 44, size=30)
+readout(T, "wt_folder", 304, 108, 300, 28, size=FS, colour="c97a1c")
+add(T, "picture", "wt_pic", x=612, y=58, w=308, h=128)
+button(T, "wt_prev", 292, 202, 58, 44, "<", fs=24)
+button(T, "wt_next", 356, 202, 58, 44, ">", fs=24)
+button(T, "wt_cat_prev", 420, 202, 130, 44, "< FOLDER", fs=FS)
+button(T, "wt_cat_next", 556, 202, 130, 44, "FOLDER >", fs=FS)
+button(T, "wt_rescan", 692, 202, 120, 44, "RESCAN", fs=FS)
+wheel(T, "wt", 880, 230)
+text(T, 820, 282, 120, "TABLE", FS_S, (0xcf, 0xcf, 0xcf))
 # the type's seven parameters (their names per type: LABEL_STRIPS)
 for i in range(7):
-    slider(T, "osc_p%d" % (i + 1), 300 + i * 90, 262, 2.85, labels_by="osc_type")
-knob(T, "osc_pitch", 1106, 140, 130, "Pitch", fs=22)
-knob(T, "osc_octave", 1106, 372, 96, "", detents=True, value=False)
-for i, t in enumerate(options("osc_octave")):
-    import math
-    a = math.radians(-149.4 + i * 49.8)
-    text(T, int(1106 + 70 * math.sin(a) - 22), int(372 - 70 * math.cos(a) - 11), 44, t, 16)
-text(T, 1046, 448, 120, "Octave", 22)
+    slider(T, "osc_p%d" % (i + 1), 300 + i * 90, 300, SL, labels_by="osc_type", fs=FS)
+knob(T, "osc_pitch", 1107, 150, KNOB, "PITCH", fs=FS)
+header(T, 955, 292, 304, "OCTAVE")
+seg(T, "osc_octave", grid(955, 328, 40, 44, 7, 7, gx=4), fs=FS)
 
 # ---------------------------------------------------------------------------------------------------------- 1 MIXER
 T = 1
@@ -161,27 +174,23 @@ for i, (k, name) in enumerate(CH):
     x0 = 30 + i * 124
     if i:
         line(T, x0 - 7, 52, 2, 546, (0x3a, 0x3a, 0x3a))
-    text(T, x0, 50, 112, name, 16)
-    add(T, "fader", "mix_%s" % k, x=x0 + 26, y=80, s=1.5, lcd=(x0 + 12, 362, 88, 32))
+    text(T, x0, 50, 112, name, FS)
+    slider(T, "mix_%s" % k, x0 + 25, 80, 2.75, "", fs=FS, value=True, vw=110)   # Valley's slider, as every page
     if k == "pfg":
-        text(T, x0, 412, 112, "GAIN", 15, (0xcf, 0xcf, 0xcf))
+        text(T, x0, 364, 112, "GAIN", FS_S, (0xcf, 0xcf, 0xcf))
         continue
-    add(T, "lit", "mute_%s" % k, x=x0 + 20, y=406, size=30)
-    add(T, "lit", "solo_%s" % k, x=x0 + 62, y=406, size=30)
-    text(T, x0 + 5, 440, 60, "MUTE", 13, (0xcf, 0xcf, 0xcf))
-    text(T, x0 + 47, 440, 60, "SOLO", 13, (0xcf, 0xcf, 0xcf))
-    text(T, x0, 474, 112, "ROUTE", 13, (0xcf, 0xcf, 0xcf))
-    seg(T, "route_%s" % k, [(x0 + 2, 496, 32, 34), (x0 + 36, 496, 44, 34), (x0 + 82, 496, 32, 34)], fs=12)
+    tbtn(T, "solo_%s" % k, x0 + 6, 362, 100, 44, "SOLO")
+    tbtn(T, "mute_%s" % k, x0 + 6, 412, 100, 44, "MUTE")
+    text(T, x0, 466, 112, "ROUTE", FS_S, (0xcf, 0xcf, 0xcf))
+    seg(T, "route_%s" % k, [(x0, 490, 112, 36), (x0, 528, 112, 36), (x0, 566, 112, 36)], ["FILTER 1", "BOTH", "FILTER 2"], fs=FS_S)
 header(T, 944, 50, 304, "FM ROUTING")
-seg(T, "fm_routing", grid(944, 88, 150, 36, 2, 4), fs=15)
-knob(T, "fm_depth", 990, 222, 70, "FM Depth", fs=15)
-knob(T, "noise_color", 1096, 222, 70, "Noise Color", fs=15)
-knob(T, "osc_drift", 1202, 222, 70, "Osc Drift", fs=15)
-header(T, 944, 304, 304, "OUTPUT")
-add(T, "fader", "sc_volume", x=962, y=334, s=1.32, lcd=None)
-text(T, 930, 576, 120, "VOLUME", 15)
-knob(T, "sc_pan", 1150, 384, 70, "Pan", fs=15)
-knob(T, "sc_width", 1150, 500, 70, "Width", fs=15)
+seg(T, "fm_routing", grid(944, 86, 150, 40, 2, 4), fs=FS)
+for i, (k, lab) in enumerate((("fm_depth", "FM Depth"), ("noise_color", "Noise Color"), ("osc_drift", "Osc Drift"))):
+    knob(T, k, 990 + i * 106, 226, KNOB_S, lab, fs=FS_S)
+header(T, 944, 318, 304, "OUTPUT")
+slider(T, "sc_volume", 968, 350, 2.4, "VOLUME", fs=FS, vw=120)
+knob(T, "sc_pan", 1160, 400, KNOB_S, "Pan", fs=FS)
+knob(T, "sc_width", 1160, 520, KNOB_S, "Width", fs=FS)
 
 # ---------------------------------------------------------------------------------------------------------- 2 FILTER
 T = 2
@@ -190,22 +199,20 @@ frame(T, 888, 26, 380, 116, "WAVESHAPER")
 frame(T, 12, 176, 470, 440, "FILTER 1")
 frame(T, 498, 176, 284, 440, "BLOCK")
 frame(T, 798, 176, 470, 440, "FILTER 2")
-seg(T, "fb_config", grid(30, 62, 98, 56, 8, 8), fs=16)
-popup(T, "ws_type", 906, 62, 214, 52)
-knob(T, "ws_drive", 1196, 86, 58, "", value=False)
-text(T, 1150, 118, 92, "DRIVE", 13, (0xcf, 0xcf, 0xcf))
+seg(T, "fb_config", grid(30, 62, 98, 56, 8, 8), fs=FS)
+popup(T, "ws_type", 906, 62, 230, 52)
+knob(T, "ws_drive", 1200, 82, 70, "", value=False)
+text(T, 1150, 118, 100, "DRIVE", FS_S, (0xcf, 0xcf, 0xcf))
 for n, x0 in ((1, 12), (2, 798)):
-    popup(T, "f%d_type" % n, x0 + 18, 202, 230, 46)
-    knob(T, "f%d_subtype" % n, x0 + 410, 216, 40, "", value=True, vw=90)
-    text(T, x0 + 348, 210, 60, "SUB", 13, (0xcf, 0xcf, 0xcf), align="right")
+    popup(T, "f%d_type" % n, x0 + 18, 198, 290, 50)
+    text(T, x0 + 330, 184, 120, "SUBTYPE", FS_S, (0xcf, 0xcf, 0xcf))
+    knob(T, "f%d_subtype" % n, x0 + 412, 230, 64, "", value=True, vw=140)
     for i, (k, lab) in enumerate((("cutoff", "Cutoff"), ("res", "Resonance"), ("env", "FEG Amt"), ("ktrk", "Keytrack"))):
-        slider(T, "f%d_%s" % (n, k), x0 + 32 + i * 110, 272, 2.75, lab)
-add(T, "lit", "f2_linkres", x=818, y=572, size=30)
-text(T, 852, 576, 150, "LINK RESONANCE", 13, align="left")
-add(T, "lit", "f2_offset", x=1010, y=572, size=30)
-text(T, 1044, 576, 220, "FILTER 2 OFFSET MODE", 13, align="left")
+        slider(T, "f%d_%s" % (n, k), x0 + 34 + i * 108, 290, SL, lab, fs=FS)
+tbtn(T, "f2_linkres", 818, 568, 190, 42, "LINK RESONANCE", fs=FS_S)
+tbtn(T, "f2_offset", 1030, 568, 220, 42, "FILTER 2 OFFSET", fs=FS_S)
 for i, (k, lab) in enumerate((("feedback", "Feedback"), ("f_balance", "Balance"), ("highpass", "Highpass"))):
-    slider(T, k, 514 + i * 88, 272, 2.75, lab, colour="yellow", fs=16)
+    slider(T, k, 514 + i * 88, 290, SL, lab, colour="yellow", fs=FS)
 
 # ---------------------------------------------------------------------------------------------------------- 3 ENV / LFO
 T = 3
@@ -215,111 +222,111 @@ for gi, (pre, title, col) in enumerate((("aeg", "AMP EG", "red"), ("feg", "FILTE
     x0 = 30 + gi * 298
     header(T, x0, 50, 284, title)
     for i, k in enumerate("adsr"):
-        slider(T, "%s_%s" % (pre, k), x0 + 4 + i * 72, 98, 2.6, k.upper(), colour=col, fs=22)
-    seg(T, "%s_mode" % pre, [(x0 + 6, 404, 134, 40), (x0 + 144, 404, 134, 40)], ["DIGITAL", "ANALOG"], fs=15)
+        slider(T, "%s_%s" % (pre, k), x0 + 4 + i * 72, 92, SL, k.upper(), colour=col, fs=22)
+    seg(T, "%s_mode" % pre, [(x0 + 6, 384, 134, 40), (x0 + 144, 384, 134, 40)], ["DIGITAL", "ANALOG"], fs=FS)
     for i, (k, lab) in enumerate((("ash", "ATK SHAPE"), ("dsh", "DEC SHAPE"), ("rsh", "REL SHAPE"))):
-        text(T, x0 + i * 96, 458, 92, lab, 12, (0xcf, 0xcf, 0xcf))
-        knob(T, "%s_%s" % (pre, k), x0 + 46 + i * 96, 504, 50, "", detents=True, value=True)
-seg(T, "lfo_sel", grid(660, 52, 94, 44, 6, 6, gx=5), fs=15)
-seg(T, "lfo_shape", grid(660, 112, 113, 36, 5, 10), fs=14)
+        text(T, x0 + i * 96, 436, 92, lab, FS_S, (0xcf, 0xcf, 0xcf))
+        knob(T, "%s_%s" % (pre, k), x0 + 46 + i * 96, 494, 64, "", detents=True, value=True, vw=94)
+seg(T, "lfo_sel", grid(660, 52, 94, 44, 6, 6, gx=5), fs=FS)
+seg(T, "lfo_shape", grid(660, 104, 113, 38, 5, 10), fs=FS_S)
 for i, (k, lab) in enumerate((("lfo_rate", "Rate"), ("lfo_phase", "Phase"), ("lfo_amp", "Amplitude"),
                               ("lfo_deform", "Deform"))):
-    knob(T, k, 712 + i * 144, 244, 76, lab, fs=16)
-text(T, 660, 342, 90, "TRIGGER", 14, (0xcf, 0xcf, 0xcf), align="left")
-seg(T, "lfo_trig", [(746, 334, 110, 36), (860, 334, 124, 36), (988, 334, 104, 36)], fs=14)
-add(T, "lit", "lfo_uni", x=1108, y=337, size=30)
-text(T, 1142, 342, 120, "UNIPOLAR", 14, align="left")
-header(T, 660, 388, 590, "LFO EG")
+    knob(T, k, 712 + i * 144, 240, KNOB_S, lab, fs=FS)
+text(T, 660, 346, 90, "TRIGGER", FS_S, (0xcf, 0xcf, 0xcf), align="left")
+seg(T, "lfo_trig", [(746, 336, 110, 40), (860, 336, 124, 40), (988, 336, 104, 40)], fs=FS_S)
+tbtn(T, "lfo_uni", 1110, 336, 140, 40, "UNIPOLAR", fs=FS_S)
+header(T, 660, 392, 590, "LFO EG")
 for i, k in enumerate(("delay", "attack", "hold", "decay", "sustain", "release")):
-    slider(T, "lfo_%s" % k, 672 + i * 98, 424, 1.65, k.capitalize(), fs=14)
+    slider(T, "lfo_%s" % k, 672 + i * 98, 426, 1.5, k.capitalize(), fs=FS_S)
 
 # ---------------------------------------------------------------------------------------------------------- 4 STEP SEQ
 T = 4
 frame(T, 12, 26, 1256, 590, "STEP SEQUENCER")
-text(T, 30, 54, 560, "The selected LFO plays these steps when its shape is Step Seq.", 15, (0xcf, 0xcf, 0xcf),
-     align="left")
-seg(T, "lfo_sel", grid(650, 50, 94, 40, 6, 6, gx=5), fs=14)
+readout(T, "seq_info", 30, 54, 610, 36, size=FS, colour="cfcfcf")
+seg(T, "lfo_sel", grid(650, 50, 94, 44, 6, 6, gx=5), fs=FS)
 for i in range(16):
-    slider(T, "seq_%d" % (i + 1), 34 + i * 74, 112, 2.6, str(i + 1), colour="orange", fs=18, bipolar=True)
-knob(T, "seq_start", 480, 560, 50, "", value=True)
-knob(T, "seq_end", 800, 560, 50, "", value=True)
-text(T, 300, 552, 140, "LOOP START", 15, align="right")
-text(T, 836, 552, 140, "LOOP END", 15, align="left")
+    slider(T, "seq_%d" % (i + 1), 34 + i * 76, 108, 3.2, str(i + 1), colour="orange", fs=FS, bipolar=True)
+button(T, "seq_on", 34, 500, 230, 56, "STEP SEQ ON", style="orange", fs=22)
+button(T, "mod_learn", 280, 500, 170, 56, "ROUTE", style="dark", fs=22)
+text(T, 466, 500, 230, "ROUTE, then touch the", FS_S, (0xcf, 0xcf, 0xcf), align="left")
+text(T, 466, 524, 230, "control the steps should move", FS_S, (0xcf, 0xcf, 0xcf), align="left")
+knob(T, "seq_start", 800, 520, KNOB_S, "LOOP START", fs=FS)
+knob(T, "seq_end", 1000, 520, KNOB_S, "LOOP END", fs=FS)
 
 # ---------------------------------------------------------------------------------------------------------- 5 MOD
 T = 5
 frame(T, 12, 26, 1256, 590, "MODULATION")
 header(T, 30, 50, 240, "SCENE")
 seg(T, "scene", [(30, 86, 110, 44), (146, 86, 110, 44)], fs=22)
-header(T, 300, 50, 340, "ROUTING")
-knob(T, "mod_slot", 360, 120, 64, "", value=True)
-text(T, 400, 92, 220, "Turn for the next routing; past the last: NEW", 13, (0xcf, 0xcf, 0xcf), align="left")
-header(T, 30, 170, 1220, "SOURCE")
-popup(T, "mod_src", 30, 206, 240, 50)
-header(T, 30, 290, 1220, "TARGET")
-lcd(T, 30, 326, 900, 70)
-readout(T, "mod_target", 44, 334, 870, 54, size=28)
-button(T, "mod_learn", 950, 326, 150, 70, "LEARN", style="orange", fs=24)
-button(T, "mod_clear", 1110, 326, 140, 70, "CLEAR", style="red", fs=22)
-readout(T, "mod_info", 30, 404, 900, 30, size=16, colour="cfcfcf")
-header(T, 30, 446, 1220, "DEPTH")
-knob(T, "mod_depth", 120, 530, 90, "", value=True)
-text(T, 200, 500, 1000, "LEARN, then touch or turn a control on any page: it becomes the target of the routing "
-     "shown (or of a NEW one from the source above).", 15, (0xcf, 0xcf, 0xcf), align="left")
+header(T, 300, 50, 400, "ROUTING")
+wheel(T, "mod_slot", 350, 128, value=True, vrect=(410, 106, 300, 40), value_size=FS_L, value_colour="fffb9013")
+text(T, 410, 148, 300, "Turn: next routing; past the last: NEW", FS_S, (0xcf, 0xcf, 0xcf), align="left")
+header(T, 30, 184, 1220, "SOURCE")
+popup(T, "mod_src", 30, 220, 300, 50)
+header(T, 30, 296, 1220, "TARGET")
+lcd(T, 30, 332, 900, 70)
+readout(T, "mod_target", 44, 340, 870, 54, size=28)
+button(T, "mod_learn", 950, 332, 150, 70, "LEARN", style="orange", fs=24)
+button(T, "mod_clear", 1110, 332, 140, 70, "CLEAR", style="red", fs=22)
+readout(T, "mod_info", 30, 408, 900, 30, size=FS, colour="cfcfcf")
+header(T, 30, 448, 1220, "DEPTH")
+knob(T, "mod_depth", 120, 536, KNOB, "", value=True, vw=140)
+text(T, 220, 506, 1000, "LEARN, then touch or turn a control on any page: it becomes the target of the routing "
+     "shown", FS_S, (0xcf, 0xcf, 0xcf), align="left")
+text(T, 220, 530, 1000, "(or of a NEW one from the source above).", FS_S, (0xcf, 0xcf, 0xcf), align="left")
 
 # ---------------------------------------------------------------------------------------------------------- 6 FX
 T = 6
 frame(T, 12, 26, 452, 590, "FX SLOTS")
 frame(T, 480, 26, 788, 590, "EFFECT")
 for r, name in enumerate(("A INSERT", "B INSERT", "SEND", "GLOBAL")):
-    text(T, 26, 72 + r * 86, 92, name, 15, (0xcf, 0xcf, 0xcf), align="left")
+    text(T, 26, 72 + r * 86, 92, name, FS_S, (0xcf, 0xcf, 0xcf), align="left")
 seg(T, "fx_sel", grid(120, 52, 78, 64, 4, 16, gx=6, gy=22), fs=22)
-header(T, 28, 400, 420, "SENDS (SCENE)")
+header(T, 28, 392, 420, "SENDS (SCENE)")
 for i in range(4):
-    knob(T, "send_%d" % (i + 1), 80 + i * 104, 462, 48, "Send %d" % (i + 1), fs=13, value=False)
-header(T, 28, 508, 420, "RETURNS")
+    knob(T, "send_%d" % (i + 1), 80 + i * 104, 450, 56, "Send %d" % (i + 1), fs=FS_S, value=False)
+header(T, 28, 506, 420, "RETURNS")
 for i in range(4):
-    knob(T, "ret_%d" % (i + 1), 80 + i * 104, 566, 48, "Return %d" % (i + 1), fs=13, value=False)
-popup(T, "fx_type", 500, 54, 260, 58)
-add(T, "lit", "fx_on", x=944, y=68, size=30)
-text(T, 980, 72, 50, "ON", 16, align="left")
+    knob(T, "ret_%d" % (i + 1), 80 + i * 104, 562, 56, "Return %d" % (i + 1), fs=FS_S, value=False)
+popup(T, "fx_type", 500, 54, 320, 58)
+tbtn(T, "fx_on", 960, 61, 110, 44, "ON")
 for i in range(12):
     knob(T, "fx_p%d" % (i + 1), 560 + (i % 6) * 128, 196 + (i // 6) * 190, 80, "", labels_by="fx_type", value=True)
-text(T, 500, 538, 200, "FX CHAIN", 14, (0xcf, 0xcf, 0xcf), align="left")
-seg(T, "fx_bypass", grid(500, 562, 180, 40, 4, 4, gx=6), fs=14)
+text(T, 500, 538, 200, "FX CHAIN", FS_S, (0xcf, 0xcf, 0xcf), align="left")
+seg(T, "fx_bypass", grid(500, 562, 180, 40, 4, 4, gx=6), fs=FS_S)
 
 # ---------------------------------------------------------------------------------------------------------- 7 PATCH
 T = 7
 frame(T, 12, 26, 760, 590, "PATCH")
 frame(T, 788, 26, 480, 590, "VOICE")
 lcd(T, 30, 54, 724, 100)
-readout(T, "patch_browse", 44, 60, 696, 56, size=40)
-readout(T, "patch_cat", 44, 116, 696, 30, size=16, colour="c97a1c")
-button(T, "patch_prev", 30, 166, 64, 46, "<", fs=20)
-button(T, "patch_next", 100, 166, 64, 46, ">", fs=20)
-button(T, "cat_prev", 176, 166, 110, 46, "< CAT", fs=15)
-button(T, "cat_next", 292, 166, 110, 46, "CAT >", fs=15)
-button(T, "patch_load", 470, 166, 130, 46, "LOAD", style="orange", fs=20)
-button(T, "patch_save", 610, 166, 130, 46, "SAVE", fs=20)
-knob(T, "patch", 434, 190, 34, "", value=False)
-text(T, 30, 226, 120, "LOADED", 13, (0xcf, 0xcf, 0xcf), align="left")
-readout(T, "patch_name", 100, 220, 650, 30, size=20, colour="ffffff")
-header(T, 30, 262, 724, "MACROS")
+readout(T, "patch_browse", 44, 58, 696, 56, size=40)
+readout(T, "patch_cat", 44, 114, 696, 34, size=22, colour="c97a1c")
+button(T, "patch_prev", 30, 170, 70, 56, "<", fs=28)
+button(T, "patch_next", 106, 170, 70, 56, ">", fs=28)
+button(T, "cat_prev", 182, 170, 112, 56, "< CAT", fs=FS_S)
+button(T, "cat_next", 300, 170, 112, 56, "CAT >", fs=FS_S)
+wheel(T, "patch", 470, 198)
+button(T, "patch_load", 536, 170, 104, 56, "LOAD", style="orange", fs=22)
+button(T, "patch_save", 646, 170, 104, 56, "SAVE", fs=22)
+text(T, 30, 256, 120, "LOADED", FS_S, (0xcf, 0xcf, 0xcf), align="left")
+readout(T, "patch_name", 116, 250, 636, 34, size=FS_L, colour="ffffff")
+header(T, 30, 296, 724, "MACROS")
 for i in range(8):
     cx = 74 + i * 90
-    knob(T, "macro_%d" % (i + 1), cx, 340, 66, "", value=True, value_dy=24)
-    readout(T, "macro_%d_name" % (i + 1), cx - 44, 375, 88, 22, size=14, colour="ffffff", align="center")
+    knob(T, "macro_%d" % (i + 1), cx, 364, 72, "", value=True, vw=88)
+    readout(T, "macro_%d_name" % (i + 1), cx - 44, 432, 88, 26, size=FS_S, colour="ffffff", align="center")
 header(T, 806, 50, 120, "SCENE")
 seg(T, "scene", [(806, 86, 60, 44), (872, 86, 60, 44)], fs=22)
 header(T, 960, 50, 290, "SCENE MODE")
-seg(T, "scene_mode", grid(960, 86, 142, 36, 2, 4), ["Single", "Key Split", "Dual", "Ch. Split"], fs=14)
-header(T, 806, 168, 444, "PLAY MODE")
-seg(T, "play_mode", grid(806, 204, 143, 36, 3, 6), fs=14)
+seg(T, "scene_mode", grid(960, 86, 142, 40, 2, 4), ["Single", "Key Split", "Dual", "Ch. Split"], fs=FS_S)
+header(T, 806, 176, 444, "PLAY MODE")
+seg(T, "play_mode", grid(806, 212, 143, 40, 3, 6), fs=FS_S)
 for i, (k, lab) in enumerate((("poly_limit", "Poly Limit"), ("portamento", "Portamento"), ("bend_up", "Bend Up"))):
-    knob(T, k, 872 + i * 156, 346, 74, lab, fs=15)
+    knob(T, k, 872 + i * 156, 350, 72, lab, fs=FS_S)
 for i, (k, lab) in enumerate((("volume", "Volume"), ("bend_dn", "Bend Down"), ("split_key", "Split Point"))):
-    knob(T, k, 872 + i * 156, 470, 74, lab, fs=15)
-button(T, "panic", 1010, 572, 220, 36, "PANIC", style="red", fs=20)
+    knob(T, k, 872 + i * 156, 472, 72, lab, fs=FS_S)
+button(T, "panic", 1010, 572, 220, 40, "PANIC", style="red", fs=22)
 
 # ---------------------------------------------------------------------------------------------------------- Q-Links
 # The first order of each page's knobs (8 per Q-Link page); qlinks.json (the Q-Link Map) replaces it. "-": empty knob.
@@ -375,6 +382,7 @@ def controls(tab):
 def qlink_order(tab):
     """the page's knob order (keys, "-" for an empty knob): qlinks.json, else the default"""
     allowed = set(c["key"] for c in controls(tab) if c["kind"] not in ("readout", "picture", "button"))
+
     if os.path.exists(QLINK_FILE):
         data = json.load(open(QLINK_FILE))
         pg = data.get("pages", {}).get(PAGE_IDS[tab])
@@ -414,7 +422,7 @@ def touch_box(c):
     if k == "slider":
         bw, bh = 22.8 * c["k"], 87.5 * c["k"]
         return (int(c["x"]), int(c["y"]), int(bw), int(bh))
-    if k == "knob":
+    if k in ("knob", "wheel"):
         s = c["s"]
         return (int(c["cx"] - s / 2), int(c["cy"] - s / 2), s, s)
     if k == "fader":
@@ -423,7 +431,7 @@ def touch_box(c):
         return (c["x"], c["y"], int(14 * c["k"]), int(20.64 * c["k"]))
     if k == "lit":
         return (c["x"], c["y"], c["size"], c["size"])
-    if k in ("button", "popup", "readout", "picture"):
+    if k in ("button", "popup", "readout", "picture", "tbtn"):
         return (c["x"], c["y"], c["w"], c["h"])
     raise SystemExit("touch_box: %s" % k)
 
@@ -457,9 +465,9 @@ def layout_lines():
             cx, cy = x + w // 2, y + h // 2 + Y0
             if k == "slider" or k == "fader":
                 L.append('slider_v cx=%d cy=%d w=%d h=%d label="" key=%s ns=0 bw=%d' % (cx, cy, w, h, c["key"], w))
-            elif k == "knob":
+            elif k in ("knob", "wheel"):
                 L.append('knob cx=%d cy=%d r=%d label="" key=%s ns=0 bw=%d' % (cx, cy, max(8, w // 2), c["key"], w))
-            elif k in ("ckss", "lit"):
+            elif k in ("ckss", "lit", "tbtn"):
                 L.append('toggle cx=%d cy=%d label="" key=%s ns=0 bw=%d' % (cx, cy, c["key"], w))
             elif k == "button":
                 L.append('button cx=%d cy=%d label="%s" key=%s' % (cx, cy, c["text"], c["key"]))

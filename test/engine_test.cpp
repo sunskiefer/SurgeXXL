@@ -377,16 +377,21 @@ void testSeq(void *s) {
   seti(s, "lfo_shape", 0);              // Sine
   std::string info = get(s, "seq_info");
   CHECK(info.find("LFO 2") == 0 && info.find("Sine") != std::string::npos, "seq_info before: %s", info.c_str());
-  tap(s, "seq_on");
+  seti(s, "seq_on", 1);
+  CHECK(geti(s, "seq_on") == 1, "STEP SEQ ON button does not read back On");
   CHECK(geti(s, "lfo_shape") == 7, "STEP SEQ ON did not set Step Seq (shape %d)", geti(s, "lfo_shape"));
   info = get(s, "seq_info");
   CHECK(info.find("modulates nothing") != std::string::npos, "seq_info after ON: %s", info.c_str());
-  tap(s, "mod_learn");
-  setf(s, "f1_cutoff", 0.5);           // the touched control becomes the target
+  seti(s, "route_on", 1);
+  CHECK(geti(s, "route_on") == 1, "ROUTE button does not read back On");
+  setf(s, "f1_cutoff", 0.5);           // the moved control becomes the target
+  CHECK(geti(s, "route_on") == 0, "ROUTE button stays On after the target is taken");
   render(s, 128);
   info = get(s, "seq_info");
   CHECK(info.find("1 routing") != std::string::npos, "seq_info after ROUTE: %s", info.c_str());
-  printf("ok   STEP SEQ ON + ROUTE: %s\n", info.c_str());
+  seti(s, "seq_on", 0);
+  CHECK(geti(s, "lfo_shape") == 0 && geti(s, "seq_on") == 0, "STEP SEQ OFF did not leave Step Seq");
+  printf("ok   STEP SEQ ON/OFF + ROUTE: %s\n", info.c_str());
 }
 
 void testState(void *s, const char *dataDir) {

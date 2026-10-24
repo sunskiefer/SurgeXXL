@@ -85,8 +85,8 @@ def readout(tab, key, x, y, w, h, size=20, colour="fb9013", align="left"):
     return add(tab, "readout", key, x=x, y=y, w=w, h=h, size=size, colour=colour, align=align)
 
 
-def popup(tab, key, x, y, w, h):
-    return add(tab, "popup", key, x=x, y=y, w=w, h=h)
+def popup(tab, key, x, y, w, h, cols=None, cw=None):
+    return add(tab, "popup", key, x=x, y=y, w=w, h=h, cols=cols, cw=cw)
 
 
 # Baked (static) artwork: frames with a title tab, sub-headers, text, LCD windows, lines.
@@ -189,8 +189,8 @@ for i, (k, lab) in enumerate((("fm_depth", "FM Depth"), ("noise_color", "Noise C
     knob(T, k, 990 + i * 106, 226, KNOB_S, lab, fs=FS_S)
 header(T, 944, 318, 304, "OUTPUT")
 slider(T, "sc_volume", 968, 350, 2.4, "VOLUME", fs=FS, vw=120)
-knob(T, "sc_pan", 1160, 400, KNOB_S, "Pan", fs=FS)
-knob(T, "sc_width", 1160, 520, KNOB_S, "Width", fs=FS)
+knob(T, "sc_pan", 1112, 420, KNOB_S, "Pan", fs=FS, vw=100)       # side by side: a value under a knob stacked above
+knob(T, "sc_width", 1214, 420, KNOB_S, "Width", fs=FS, vw=100)   # another knob ran into it
 
 # ---------------------------------------------------------------------------------------------------------- 2 FILTER
 T = 2
@@ -200,11 +200,11 @@ frame(T, 12, 176, 470, 440, "FILTER 1")
 frame(T, 498, 176, 284, 440, "BLOCK")
 frame(T, 798, 176, 470, 440, "FILTER 2")
 seg(T, "fb_config", grid(30, 62, 98, 56, 8, 8), fs=FS)
-popup(T, "ws_type", 906, 62, 230, 52)
+popup(T, "ws_type", 906, 62, 230, 52, cols=4, cw=236)    # the open list must fit the 1280 px screen (cols x cw)
 knob(T, "ws_drive", 1200, 82, 70, "", value=False)
 text(T, 1150, 118, 100, "DRIVE", FS_S, (0xcf, 0xcf, 0xcf))
 for n, x0 in ((1, 12), (2, 798)):
-    popup(T, "f%d_type" % n, x0 + 18, 198, 290, 50)
+    popup(T, "f%d_type" % n, x0 + 18, 198, 290, 50, cols=5, cw=236)
     text(T, x0 + 330, 184, 120, "SUBTYPE", FS_S, (0xcf, 0xcf, 0xcf))
     knob(T, "f%d_subtype" % n, x0 + 412, 230, 64, "", value=True, vw=140)
     for i, (k, lab) in enumerate((("cutoff", "Cutoff"), ("res", "Resonance"), ("env", "FEG Amt"), ("ktrk", "Keytrack"))):
@@ -246,10 +246,10 @@ readout(T, "seq_info", 30, 54, 610, 36, size=FS, colour="cfcfcf")
 seg(T, "lfo_sel", grid(650, 50, 94, 44, 6, 6, gx=5), fs=FS)
 for i in range(16):
     slider(T, "seq_%d" % (i + 1), 34 + i * 76, 108, 3.2, str(i + 1), colour="orange", fs=FS, bipolar=True)
-button(T, "seq_on", 34, 500, 230, 56, "STEP SEQ ON", style="orange", fs=22)
-button(T, "mod_learn", 280, 500, 170, 56, "ROUTE", style="dark", fs=22)
-text(T, 466, 500, 230, "ROUTE, then touch the", FS_S, (0xcf, 0xcf, 0xcf), align="left")
-text(T, 466, 524, 230, "control the steps should move", FS_S, (0xcf, 0xcf, 0xcf), align="left")
+tbtn(T, "seq_on", 34, 500, 230, 56, "STEP SEQ ON", fs=22)
+tbtn(T, "route_on", 280, 500, 170, 56, "ROUTE", fs=22)
+text(T, 466, 500, 230, "ROUTE, then move the", FS_S, (0xcf, 0xcf, 0xcf), align="left")
+text(T, 466, 524, 230, "control the steps drive", FS_S, (0xcf, 0xcf, 0xcf), align="left")
 knob(T, "seq_start", 800, 520, KNOB_S, "LOOP START", fs=FS)
 knob(T, "seq_end", 1000, 520, KNOB_S, "LOOP END", fs=FS)
 
@@ -266,12 +266,12 @@ popup(T, "mod_src", 30, 220, 300, 50)
 header(T, 30, 296, 1220, "TARGET")
 lcd(T, 30, 332, 900, 70)
 readout(T, "mod_target", 44, 340, 870, 54, size=28)
-button(T, "mod_learn", 950, 332, 150, 70, "LEARN", style="orange", fs=24)
+tbtn(T, "route_on", 950, 332, 150, 70, "LEARN", fs=24)
 button(T, "mod_clear", 1110, 332, 140, 70, "CLEAR", style="red", fs=22)
 readout(T, "mod_info", 30, 408, 900, 30, size=FS, colour="cfcfcf")
 header(T, 30, 448, 1220, "DEPTH")
 knob(T, "mod_depth", 120, 536, KNOB, "", value=True, vw=140)
-text(T, 220, 506, 1000, "LEARN, then touch or turn a control on any page: it becomes the target of the routing "
+text(T, 220, 506, 1000, "LEARN, then move a control on any page: it becomes the target of the routing "
      "shown", FS_S, (0xcf, 0xcf, 0xcf), align="left")
 text(T, 220, 530, 1000, "(or of a NEW one from the source above).", FS_S, (0xcf, 0xcf, 0xcf), align="left")
 
@@ -474,7 +474,8 @@ def layout_lines():
             elif k == "button":
                 L.append('button cx=%d cy=%d label="%s" key=%s' % (cx, cy, c["text"], c["key"]))
             elif k == "popup":
-                L.append('popup cx=%d cy=%d w=%d h=%d key=%s' % (cx, cy, w, h, c["key"]))
+                L.append('popup cx=%d cy=%d w=%d h=%d key=%s%s%s' % (cx, cy, w, h, c["key"],
+                         " cols=%d" % c["cols"] if c.get("cols") else "", " cw=%d" % c["cw"] if c.get("cw") else ""))
             elif k == "readout":
                 L.append('readout cx=%d cy=%d w=%d h=%d key=%s' % (cx, cy, w, h, c["key"]))
         for name_, keys in zip(qlink_names(t), qlink_pages(t)):

@@ -501,7 +501,7 @@ struct Inst : public SurgeSynthesizer::PluginLayer {
     std::string out = lfoLabel();
     if (lfoData().shape.val.i != lt_stepseq) return out + ": shape is " + lfoData().shape.get_display() + ". Press STEP SEQ ON to play the steps.";
     int n = lfoRoutings();
-    if (n == 0) return out + " plays the steps, but modulates nothing yet: ROUTE, then touch the control it should move.";
+    if (n == 0) return out + " plays the steps, but modulates nothing yet: ROUTE, then move the control it should drive.";
     char t[64];
     snprintf(t, sizeof t, " plays the steps into %d routing%s.", n, n == 1 ? "" : "s");
     return out + t;
@@ -556,7 +556,7 @@ struct Inst : public SurgeSynthesizer::PluginLayer {
     switch (i) {
       case P_WT_PREV: case P_WT_NEXT: case P_WT_CAT_PREV: case P_WT_CAT_NEXT: case P_WT_RESCAN:
       case P_PATCH_PREV: case P_PATCH_NEXT: case P_CAT_PREV: case P_CAT_NEXT: case P_PATCH_LOAD: case P_PATCH_SAVE:
-      case P_PANIC: case P_MOD_LEARN: case P_MOD_CLEAR: case P_SEQ_ON:
+      case P_PANIC: case P_MOD_LEARN: case P_MOD_CLEAR:
       case P_CAT_FACTORY: case P_CAT_3RD: case P_CAT_USER:
         return true;
       default:
@@ -588,8 +588,7 @@ struct Inst : public SurgeSynthesizer::PluginLayer {
       case P_PATCH_LOAD: loadBrowsed(); break;
       case P_PATCH_SAVE: savePatch(); break;
       case P_PANIC: synth->allNotesOff(); break;
-      case P_MOD_LEARN: learn = !learn; modMsg = learn ? "Touch a control to modulate" : ""; bump(); break;
-      case P_SEQ_ON: seqOn(); break;
+      case P_MOD_LEARN: learn = !learn; modMsg = learn ? "Move a control to modulate" : ""; bump(); break;
       case P_MOD_CLEAR: {
         ModSlot m;
         if (currentMod(m)) synth->clearModulation(m.ptag, (modsources)m.src, m.srcScene, m.index, true);
@@ -647,6 +646,15 @@ struct Inst : public SurgeSynthesizer::PluginLayer {
       case P_FX_SEL: fxPos = clampi((int)lroundf(v), 0, n_fx_slots - 1); bump(); break;
       case P_WT: wtSelectPos((int)lroundf(v)); break;
       case P_PATCH: browse = clampi((int)lroundf(v), 0, std::max(0, numPatches() - 1)); bump(); break;
+      case P_SEQ_ON:      // on: the LFO plays the steps; off: back to a Sine LFO
+        if (v >= 0.5f) seqOn(); else if (lfoData().shape.val.i == lt_stepseq) setInt(&lfoData().shape, lt_sine);
+        bump();
+        break;
+      case P_ROUTE_ON:
+        learn = v >= 0.5f;
+        modMsg = learn ? "Move a control to modulate" : "";
+        bump();
+        break;
       case P_FX_ON: {
         int bit = 1 << fxSlot();
         int d = patch().fx_disable.val.i;
@@ -766,6 +774,8 @@ struct Inst : public SurgeSynthesizer::PluginLayer {
         if (disp) return snprintf(buf, len, "%d", pic);
         return snprintf(buf, len, "%d", pic);
       }
+      case P_SEQ_ON: return snprintf(buf, len, "%d", lfoData().shape.val.i == lt_stepseq ? 1 : 0);
+      case P_ROUTE_ON: return snprintf(buf, len, "%d", learn ? 1 : 0);
       case P_FX_ON: return snprintf(buf, len, "%d", (patch().fx_disable.val.i >> fxSlot() & 1) ? 0 : 1);
       case P_SEQ_START: return snprintf(buf, len, "%d", patch().stepsequences[scene()][lfoIndex()].loop_start + 1);
       case P_SEQ_END: return snprintf(buf, len, "%d", patch().stepsequences[scene()][lfoIndex()].loop_end + 1);
@@ -796,7 +806,7 @@ struct Inst : public SurgeSynthesizer::PluginLayer {
       }
       case P_MOD_TARGET: {
         ModSlot m;
-        if (learn) return put(buf, len, "LEARN: touch a control");
+        if (learn) return put(buf, len, "LEARN: move a control");
         return put(buf, len, currentMod(m) ? paramName(m.ptag) : std::string("(none: LEARN a target)"));
       }
       case P_MOD_INFO: return put(buf, len, modMsg);

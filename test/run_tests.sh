@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # SurgeXXL's offline tests (no device): the engine test and mpc-vst-plugins' host test, on x86 and, under qemu-arm,
 # as the Force build itself.
-#   test/run_tests.sh [x86|arm|all] [--patches all|N]
+#   test/run_tests.sh [arm|x86|all] [--patches all|N]      (default: arm, the Force binary under qemu)
 # x86 needs cmake, ninja and a host compiler; arm needs build.sh's toolchain (zig) plus qemu-user and an armhf glibc
 # (Debian/Ubuntu: apt install qemu-user libc6-armhf-cross). The stage (test/stage.sh) is a card with the plugin's data
 # folder; the user folder (SurgeXXL/) is emptied before each run.
@@ -10,7 +10,7 @@ cd "$(dirname "$0")/.."
 # MPC's service on a Force runs with no HOME: every run below does too (0.1.0-0.1.3 could not make an instance
 # without it: "create: exception The environment variable HOME is unset or empty", a Force's surgexxl.log)
 NOHOME="env -u HOME -u XDG_CONFIG_HOME -u XDG_DATA_HOME -u XDG_DOCUMENTS_DIR"
-WHICH="${1:-all}"; shift || true
+WHICH="${1:-arm}"; shift || true   # the Force binary by default; x86 only when asked (it is never what ships)
 PATCHES=(--patches 10)
 [ "${1:-}" = --patches ] && PATCHES=(--patches "$2")
 MPC_VST="${MPC_VST:-$PWD/third_party/mpc-vst-plugins}"

@@ -71,7 +71,7 @@ const char *kWtPictures[] = {
 const int kNumWtPictures = sizeof(kWtPictures) / sizeof(kWtPictures[0]);
 
 const float kSampleRate = 44100.0f;
-const char *const kVersion = "0.1.2";
+const char *const kVersion = "0.2.0";
 const uint64_t kGestureFrames = 15435;   // 0.35 s: trigger sets closer than this are one Q-Link turn
 const int kRemovedFx[] = {27};           // Spring Reverb (Surge's fx type number)
 const char *kSlotNames[n_fx_slots] = {"A1", "A2", "A3", "A4", "B1", "B2", "B3", "B4",

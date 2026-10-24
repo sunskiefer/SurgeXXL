@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.2.0
+- **Fixed: SurgeXXL loaded nothing (or took MPC down when a track switched to it) on every Force.** MPC's service runs
+  with no `HOME` variable, and Surge's start-up asked for the home folder before anything else, so no instance could
+  ever be made: the crash log said `create: exception The environment variable HOME is unset or empty`. Surge now never
+  looks there (the plugin has its own user folder, `/sdcard/SurgeXXL`). Every offline test (x86, and the Force binary
+  under an ARM emulator) now runs with no HOME as MPC does; the old code fails it with the Force's exact log line.
+- Built with mpc-vst-plugins at sunskiefer 3845bea: the Q-Link / automation UpdateDisplay fix (#486-#489) and the
+  installer's escaped L'Cronx name.
+- The whole library stays in (every factory and third-party patch and wavetable). The package is big (about 450 MB
+  unpacked): install it on its own, not in a batch with other plugins (see the release notes).
+
 ## 0.1.3
 - Packed under **L'Cronx**: the plugin folder is now `L'Cronx - VST - SurgeXXL` and MPC lists the maker as L'Cronx. Nothing else
   changed from 0.1.2. If you installed 0.1.2, run its `uninstall.sh` first (copy out anything you saved inside the plugin

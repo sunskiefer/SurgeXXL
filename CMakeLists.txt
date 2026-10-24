@@ -2,7 +2,7 @@
 # build.sh drives this: it generates build/gen (params.h, vst2_wrap.c) first, then configures with the armv7 toolchain
 # (tools/armv7-zig.cmake) for the Force, or natively for the x86 tests (test/run_tests.sh).
 cmake_minimum_required(VERSION 3.21)
-project(SurgeXXL VERSION 0.1.0 LANGUAGES C CXX ASM)
+project(SurgeXXL VERSION 0.2.0 LANGUAGES C CXX ASM)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

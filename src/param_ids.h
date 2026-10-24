@@ -191,4 +191,7 @@
 #define P_MACRO_8_NAME 188
 #define P_SEQ_ON 189
 #define P_SEQ_INFO 190
-#define P_COUNT 191
+#define P_CAT_FACTORY 191
+#define P_CAT_3RD 192
+#define P_CAT_USER 193
+#define P_COUNT 194

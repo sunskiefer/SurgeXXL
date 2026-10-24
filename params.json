@@ -1868,6 +1868,33 @@
    "default": 0.0,
    "display": "string",
    "type": "readout"
+  },
+  {
+   "key": "cat_factory",
+   "name": "Jump Factory",
+   "min": 0.0,
+   "max": 1.0,
+   "momentary": true,
+   "type": "trigger",
+   "default": 0.0
+  },
+  {
+   "key": "cat_3rd",
+   "name": "Jump 3rd Party",
+   "min": 0.0,
+   "max": 1.0,
+   "momentary": true,
+   "type": "trigger",
+   "default": 0.0
+  },
+  {
+   "key": "cat_user",
+   "name": "Jump User",
+   "min": 0.0,
+   "max": 1.0,
+   "momentary": true,
+   "type": "trigger",
+   "default": 0.0
   }
  ]
 }

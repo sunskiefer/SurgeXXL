@@ -352,6 +352,15 @@ struct Inst : public SurgeSynthesizer::PluginLayer {
     browse = pos;
     bump();
   }
+  // FACTORY / 3RD PARTY / USER: the first patch of that group (a group with no patches leaves the browser where it is)
+  void jumpGroup(int g) {
+    auto &st = synth->storage;
+    for (int pos = 0; pos < numPatches(); ++pos) {
+      int c = st.patch_list[patchAt(pos)].category;
+      int cg = c >= st.firstUserCategory ? 2 : (c >= st.firstThirdPartyCategory ? 1 : 0);
+      if (cg == g) { browse = pos; bump(); return; }
+    }
+  }
   void savePatch() {
     fs::path dir = fs::path(userDir) / "Patches" / "SurgeXXL";
     std::error_code ec;
@@ -548,6 +557,7 @@ struct Inst : public SurgeSynthesizer::PluginLayer {
       case P_WT_PREV: case P_WT_NEXT: case P_WT_CAT_PREV: case P_WT_CAT_NEXT: case P_WT_RESCAN:
       case P_PATCH_PREV: case P_PATCH_NEXT: case P_CAT_PREV: case P_CAT_NEXT: case P_PATCH_LOAD: case P_PATCH_SAVE:
       case P_PANIC: case P_MOD_LEARN: case P_MOD_CLEAR: case P_SEQ_ON:
+      case P_CAT_FACTORY: case P_CAT_3RD: case P_CAT_USER:
         return true;
       default:
         return false;
@@ -572,6 +582,9 @@ struct Inst : public SurgeSynthesizer::PluginLayer {
       case P_PATCH_NEXT: browse = clampi(browse + 1, 0, numPatches() - 1); bump(); break;
       case P_CAT_PREV: stepCategory(-1); break;
       case P_CAT_NEXT: stepCategory(1); break;
+      case P_CAT_FACTORY: jumpGroup(0); break;
+      case P_CAT_3RD: jumpGroup(1); break;
+      case P_CAT_USER: jumpGroup(2); break;
       case P_PATCH_LOAD: loadBrowsed(); break;
       case P_PATCH_SAVE: savePatch(); break;
       case P_PANIC: synth->allNotesOff(); break;

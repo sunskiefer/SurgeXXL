@@ -261,7 +261,8 @@ P += [readout("macro_%d_name" % (i + 1), "Macro %d Name" % (i + 1)) for i in ran
 # ---- 0.3.0 (appended: params.lock keeps the order of the keys above) -----------------------------------------------
 # STEP SEQ: one button makes the selected LFO play the steps (its shape becomes Step Seq), and a line says what it
 # does and whether it is routed anywhere (an LFO modulates nothing until it is)
-P += [trigger("seq_on", "Step Seq On"), readout("seq_info", "Step Seq Info")]
+P += [trigger("seq_on", "Step Seq On"), readout("seq_info", "Step Seq Info"),
+       trigger("cat_factory", "Jump Factory"), trigger("cat_3rd", "Jump 3rd Party"), trigger("cat_user", "Jump User")]
 
 # ---- checks --------------------------------------------------------------------------------------------------------
 keys = [p["key"] for p in P]

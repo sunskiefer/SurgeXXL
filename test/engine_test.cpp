@@ -280,6 +280,36 @@ void testFx(void *s) {
   printf("ok   every FX type (%d) played\n", ft->nvals - 1);
 }
 
+// The whole library is listed (made with no HOME, as MPC makes it: 0.1.0-0.1.3 could not), factory and third party,
+// and every third-party wavetable has its picture.
+void testLibrary(void *s) {
+  int np = atoi(get(s, "test_num_patches").c_str()), nw = atoi(get(s, "test_num_wt").c_str());
+  CHECK(np == 3008, "%d patches listed, expected 3008 ", np);
+  CHECK(nw == 761, "%d wavetables listed, expected 761 ", nw);
+  int third = 0, factory = 0;
+  for (int i = 0; i < np; ++i) {
+    seti(s, "patch", i);
+    std::string c = get(s, "patch_cat");
+    if (!c.compare(0, 9, "3RD PARTY")) ++third;
+    else if (!c.compare(0, 7, "FACTORY")) ++factory;
+  }
+  CHECK(third > 0 && factory > 0, "patch categories: %d factory, %d third party", factory, third);
+  seti(s, "patch", 0);
+  seti(s, "osc_sel", 0);
+  int wpics = 0, wthird = 0;
+  for (int i = 0; i < nw; ++i) {
+    seti(s, "wt", i);
+    render(s, 128);
+    if (!get(s, "wt_folder").compare(0, 9, "3RD PARTY")) {
+      ++wthird;
+      if (atoi(get(s, "wt_pic").c_str()) > 0) ++wpics;
+    }
+  }
+  CHECK(wthird > 0 && wpics == wthird, "third-party wavetables: %d listed, %d with a picture", wthird, wpics);
+  printf("ok   library: %d factory + %d third-party patches, %d third-party wavetables (all with pictures)\n", factory,
+         third, wthird);
+}
+
 void testWavetables(void *s, const std::string &stage) {
   seti(s, "osc_sel", 0);
   seti(s, "osc_type", 2);     // Wavetable
@@ -398,6 +428,7 @@ int main(int argc, char **argv) {
   }
   printf("ok   created in %.0f ms: %s patches, %s wavetables, user folder %s\n", (now() - t0) * 1000,
          get(s, "test_num_patches").c_str(), get(s, "test_num_wt").c_str(), get(s, "test_user_dir").c_str());
+  testLibrary(s);
   render(s, 4410);
   testParams(s);
   testRoundTrips(s);

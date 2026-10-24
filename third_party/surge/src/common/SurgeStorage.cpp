@@ -268,10 +268,14 @@ SurgeStorage::SurgeStorage(const SurgeStorage::SurgeStorageConfig &config) : oth
 
         up = up.parent_path();
     }
-    userDataPath = sst::plugininfra::paths::bestDocumentsFolderPathFor(sxt);
-    // SurgeXXL: the user folder (patches, wavetables) is the plugin's own, set by the plugin before it makes a synth
+    // SurgeXXL: the user folder (patches, wavetables) is the plugin's own, set by the plugin before it makes a synth.
+    // Surge's own lookup (~/Documents/Surge XT) is not even tried then: it needs $HOME, and MPC's service on a
+    // Force runs with no HOME at all, so bestDocumentsFolderPathFor() threw and no instance could be made
+    // ("create: exception The environment variable HOME is unset or empty", a Force, 2026-10-13).
     if (!surgeXXLUserDataPath().empty())
         userDataPath = fs::path{surgeXXLUserDataPath()};
+    else
+        userDataPath = sst::plugininfra::paths::bestDocumentsFolderPathFor(sxt);
 
 #elif WINDOWS
     const auto installPath = sst::plugininfra::paths::sharedLibraryBinaryPath().parent_path();

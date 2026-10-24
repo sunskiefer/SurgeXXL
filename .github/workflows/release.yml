@@ -35,6 +35,17 @@ jobs:
             --license GPL-3.0-or-later -o dist \
             --about "Surge XT's synth engine (every factory patch and wavetable, your own patches and wavetables) as a native instrument for the Akai Force."
           python3 third_party/mpc-vst-plugins/tools/catalog_check.py "dist/SurgeXXL-$VERSION-mpc-armv7.zip" --catalog
+      - name: Installer scripts parse (the L'Cronx quote)
+        run: |
+          # the release fails unless install.sh and uninstall.sh parse with sh, dash and bash, and the folder name in
+          # them is the escaped L'\''Cronx (a bare L'Cronx inside '...' ends the quote: 'Syntax error: "(" unexpected')
+          sudo apt-get install -y -qq dash >/dev/null
+          rm -rf /tmp/chk && mkdir /tmp/chk && unzip -q "dist/SurgeXXL-$VERSION-mpc-armv7.zip" -d /tmp/chk
+          for f in /tmp/chk/*/install.sh /tmp/chk/*/uninstall.sh; do
+            for sh in sh dash bash; do $sh -n "$f" || { echo "$sh -n failed: $f"; exit 1; }; done
+            grep -q "SKIN='L'\\\\''Cronx - VST - SurgeXXL'" "$f" || { echo "unescaped L'Cronx in $f"; exit 1; }
+          done
+          echo "install.sh and uninstall.sh parse; L'Cronx is escaped"
       - name: Publish
         env: { GH_TOKEN: '${{ github.token }}' }
         run: |

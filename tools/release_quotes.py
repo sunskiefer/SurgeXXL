@@ -15,6 +15,9 @@ for name in ("release.py", "catalog_check.py"):
     s = open(p).read()
     if "L'Cronx) inside" in s:
         continue
+    if "L'\\''Cronx" in s:   # the framework escapes it itself (sunskiefer/mpc-vst-plugins 3c9ee0f / 5412591)
+        print("release_quotes: %s escapes the quote already" % p)
+        continue
     s, n = re.subn(r"(\n([ \t]*)for k, v in sub\.items\(\):\n\2    text = text\.replace\(k, v\)\n)",
                    lambda m: "\n%sfor k in (\"@NAME@\", \"@SKIN@\"):   # a name with ' (L'Cronx) inside the script's '...' quotes\n"
                              "%s    text = text.replace(\"'%%s'\" %% k, \"'%%s'\" %% sub[k].replace(\"'\", \"'\\\\''\"))%s"

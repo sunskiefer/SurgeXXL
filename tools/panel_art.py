@@ -68,6 +68,27 @@ FADER_CHANNEL = (13, 16, 12, 151)
 THUMB = (14, 25)
 
 
+def gold_fill(img, box, radius, vertical=True):
+    """paint a rounded box with the theme's gold: lighter along the top, darker towards the foot, and a thin lit edge"""
+    x0, y0, x1, y1 = [int(v) for v in box]
+    w, h = max(1, x1 - x0), max(1, y1 - y0)
+    hi, mid, lo = TH["gold_hi"], TH["btn_on"], TH["gold_lo"]
+    g = Image.new("RGBA", (w, h))
+    gd = ImageDraw.Draw(g)
+    for i in range(h):
+        t = i / max(1, h - 1)
+        if t < 0.45:
+            u = t / 0.45
+            c = tuple(int(hi[k] + (mid[k] - hi[k]) * u) for k in range(3))
+        else:
+            u = (t - 0.45) / 0.55
+            c = tuple(int(mid[k] + (lo[k] - mid[k]) * u) for k in range(3))
+        gd.line((0, i, w, i), fill=c + (255,))
+    m = Image.new("L", (w, h), 0)
+    ImageDraw.Draw(m).rounded_rectangle((0, 0, w - 1, h - 1), radius=radius, fill=255)
+    img.paste(g, (x0, y0), m)
+
+
 def screen_hex(h):
     """lettering on a dark screen: the dark skin's orange becomes this theme's screen inks (8-digit AARRGGBB or 6-digit)"""
     t = h.lower()
@@ -242,8 +263,11 @@ def slider_frames(page_img, c):
             cxs = (hx + hw / 2) * SS
             mid = (top + hh / 2) * SS
             foot = (TRAVEL[1] * c["k"] + hh / 2 + 8) * SS
-            fc = CAP_COLOURS[c["colour"]] if c["colour"] in ("red", "yellow", "green", "blue") else TH["fill"]
-            ImageDraw.Draw(cell).rounded_rectangle((cxs - 5.5 * SS, mid, cxs + 5.5 * SS, foot), radius=5.5 * SS, fill=fc)
+            fc = CAP_COLOURS[c["colour"]] if c["colour"] in ("red", "yellow", "green", "blue") and not TH.get("mono_fill") else TH["fill"]
+            if TH.get("mono_fill"):
+                gold_fill(cell, (cxs - 5.5 * SS, mid, cxs + 5.5 * SS, foot), 5.5 * SS)
+            else:
+                ImageDraw.Draw(cell).rounded_rectangle((cxs - 5.5 * SS, mid, cxs + 5.5 * SS, foot), radius=5.5 * SS, fill=fc)
         paste(cell, handle, hx * SS, top * SS)
         frames.append(down(cell, bw, bh))
     return box, frames
@@ -259,7 +283,10 @@ def hive_knob(s, v):
     a0, a1 = -90 - math.degrees(ROGAN_SWEEP), -90 + math.degrees(ROGAN_SWEEP)
     ring = (2.5 * SS, 2.5 * SS, s * SS - 2.5 * SS, s * SS - 2.5 * SS)
     d.arc(ring, a0, a1, fill=L["ring"], width=int(2.4 * SS))
-    if v > 0.004:
+    if L.get("dot"):               # Serum: one short lit mark on the ring where the pointer is, not an arc
+        am = a0 + (a1 - a0) * v
+        d.arc(ring, am - 3.5, am + 3.5, fill=L["arc"], width=int(4.2 * SS))
+    elif v > 0.004:
         d.arc(ring, a0, a0 + (a1 - a0) * v, fill=L["arc"], width=int(2.4 * SS))
     rb = r * L["rb"]
     d.ellipse((r - rb, r - rb, r + rb, r + rb), fill=L["cap_o"])
@@ -407,6 +434,9 @@ def button_image(w, h, s, fs, fill, ink, radius=3):
     img = Image.new("RGBA", (w * SS, h * SS), BG + (255,))
     d = ImageDraw.Draw(img)
     d.rounded_rectangle((0, 0, w * SS - 1, h * SS - 1), radius=radius * SS, fill=fill)
+    if TH["bevel"] and tuple(fill) == tuple(BTN_ON):
+        gold_fill(img, (0, 0, w * SS, h * SS), radius * SS)
+        d = ImageDraw.Draw(img)
     if TH["bevel"]:               # a lit top edge, a darker foot and a faint sheen (the Serum look)
         lay = Image.new("RGBA", img.size, (0, 0, 0, 0))
         ld = ImageDraw.Draw(lay)
@@ -430,6 +460,8 @@ def button_image(w, h, s, fs, fill, ink, radius=3):
 
 STYLES = {"dark": (SEG_OFF, BTN_OFF_INK, (0x3a, 0x3a, 0x3a), INK), "orange": (BTN_ON, BTN_ON_INK, (255, 196, 120), BTN_ON_INK),
           "red": ((210, 58, 42), (255, 255, 255), (240, 96, 80), (255, 255, 255))}
+if TH["bevel"]:                    # no flat red on a Serum page: the panic key is a dark key with gold lettering
+    STYLES["red"] = (SEG_OFF, TH["gold_hi"], BTN_ON, BTN_ON_INK)
 
 
 # ------------------------------------------------------------------------------------------------ label strips

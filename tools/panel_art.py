@@ -126,16 +126,16 @@ def draw_art(d, item):
     kind = item[0]
     if kind == "frame":
         _, x, y, w, h, title = item
-        d.rectangle((x * SS, y * SS, (x + w) * SS - 1, (y + h) * SS - 1), outline=INK, width=3 * SS)
+        d.rectangle((x * SS, y * SS, (x + w) * SS - 1, (y + h) * SS - 1), outline=TH["frame_line"], width=(2 if TH["bevel"] else 3) * SS)
         f = font(24 * SS)
         tw = d.textlength(title, font=f) / SS
         tx = x + (w - tw) / 2 - 22
-        d.rectangle((tx * SS, (y - 18) * SS, (tx + tw + 44) * SS, (y + 18) * SS), fill=INK)
+        d.rectangle((tx * SS, (y - 18) * SS, (tx + tw + 44) * SS, (y + 18) * SS), fill=TH["tab_fill"], outline=TH["frame_line"] if TH["bevel"] else None, width=SS)
         d.text(((x + w / 2) * SS, y * SS), title, font=f, fill=TH["tab_text"], anchor="mm")
     elif kind == "header":
         _, x, y, w, s = item
         text_at(d, x, y, w, s, HEADER_SIZE, INK, "left")
-        d.rectangle((x * SS, (y + 28) * SS, (x + w) * SS, (y + 29) * SS - 1), fill=INK)
+        d.rectangle((x * SS, (y + 28) * SS, (x + w) * SS, (y + 29) * SS - 1), fill=TH["header_line"])
     elif kind == "text":
         _, x, y, w, s, size, colour, align = item
         text_at(d, x, y, w, s, size, (TH["bg_text"] or {}).get(tuple(colour), colour), align)
@@ -167,7 +167,7 @@ def draw_slider_slot(img, c):
     if TH["style"] == "hive":      # HIVE 2: a slim dark track the cap runs on, no ticks
         cx = x + hx + hw / 2
         top, bot = y + (TRAVEL[0] + hh / (2 * k)) * k, y + (TRAVEL[1] + hh / (2 * k)) * k
-        d.rounded_rectangle(((cx - 5.5) * SS, (top - 8) * SS, (cx + 5.5) * SS, (bot + 8) * SS), radius=5.5 * SS, fill=(0xb8, 0xb8, 0xb8))
+        d.rounded_rectangle(((cx - 5.5) * SS, (top - 8) * SS, (cx + 5.5) * SS, (bot + 8) * SS), radius=5.5 * SS, fill=TH["track"])
         return
     d.rounded_rectangle(((x + hx - 4) * SS, y * SS, (x + hx + hw + 4) * SS, (y + bh) * SS), radius=4 * SS,
                         fill=(0x1b, 0x1b, 0x1b))
@@ -221,7 +221,7 @@ def hive_cap(hw, hh, colour):
     cap = Image.new("RGBA", (int(hw * SS), int(hh * SS)), (0, 0, 0, 0))
     d = ImageDraw.Draw(cap)
     x0, y0 = (cap.size[0] - w) // 2, (cap.size[1] - h) // 2
-    d.rounded_rectangle((x0, y0, x0 + w, y0 + h), radius=2 * SS, fill=(0x20, 0x20, 0x20))
+    d.rounded_rectangle((x0, y0, x0 + w, y0 + h), radius=2 * SS, fill=TH["cap"])
     return cap
 
 
@@ -242,7 +242,7 @@ def slider_frames(page_img, c):
             cxs = (hx + hw / 2) * SS
             mid = (top + hh / 2) * SS
             foot = (TRAVEL[1] * c["k"] + hh / 2 + 8) * SS
-            fc = CAP_COLOURS[c["colour"]] if c["colour"] in ("red", "yellow", "green", "blue") else (0x2e, 0x2e, 0x2e)
+            fc = CAP_COLOURS[c["colour"]] if c["colour"] in ("red", "yellow", "green", "blue") else TH["fill"]
             ImageDraw.Draw(cell).rounded_rectangle((cxs - 5.5 * SS, mid, cxs + 5.5 * SS, foot), radius=5.5 * SS, fill=fc)
         paste(cell, handle, hx * SS, top * SS)
         frames.append(down(cell, bw, bh))
@@ -250,21 +250,32 @@ def slider_frames(page_img, c):
 
 
 def hive_knob(s, v):
-    """a HIVE-style knob (drawn at SS): a black cap with a thin ring, a short white tick at its rim for the value"""
+    """a flat black knob (HIVE / Serum): a thin ring with the value arc, a cap, and a light pointer (drawn at SS; the Serum
+    look adds a bevel: a light edge on the cap's top, a dark one underneath)"""
+    L = TH["knob_look"]
     img = Image.new("RGBA", (s * SS, s * SS), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
     r = s * SS / 2
     a0, a1 = -90 - math.degrees(ROGAN_SWEEP), -90 + math.degrees(ROGAN_SWEEP)
     ring = (2.5 * SS, 2.5 * SS, s * SS - 2.5 * SS, s * SS - 2.5 * SS)
-    d.arc(ring, a0, a1, fill=(0xb4, 0xb4, 0xb4), width=int(2.4 * SS))
+    d.arc(ring, a0, a1, fill=L["ring"], width=int(2.4 * SS))
     if v > 0.004:
-        d.arc(ring, a0, a0 + (a1 - a0) * v, fill=(0x3a, 0x3a, 0x3a), width=int(2.4 * SS))
-    rb = r * 0.80
-    d.ellipse((r - rb, r - rb, r + rb, r + rb), fill=(0x0e, 0x0e, 0x0e))
-    d.ellipse((r - rb * 0.93, r - rb * 0.93, r + rb * 0.93, r + rb * 0.93), fill=(0x1c, 0x1c, 0x1c))
+        d.arc(ring, a0, a0 + (a1 - a0) * v, fill=L["arc"], width=int(2.4 * SS))
+    rb = r * L["rb"]
+    d.ellipse((r - rb, r - rb, r + rb, r + rb), fill=L["cap_o"])
+    d.ellipse((r - rb * 0.93, r - rb * 0.93, r + rb * 0.93, r + rb * 0.93), fill=L["cap_i"])
+    if TH["bevel"]:
+        lay = Image.new("RGBA", img.size, (0, 0, 0, 0))
+        ld = ImageDraw.Draw(lay)
+        box = (r - rb * 0.93, r - rb * 0.93, r + rb * 0.93, r + rb * 0.93)
+        ld.arc(box, 200, 340, fill=(255, 255, 255, 70), width=int(1.6 * SS))
+        ld.arc(box, 20, 160, fill=(0, 0, 0, 150), width=int(1.6 * SS))
+        ld.ellipse((r - rb * 0.55, r - rb * 0.55, r + rb * 0.55, r + rb * 0.55), outline=(255, 255, 255, 16), width=SS)
+        img.alpha_composite(lay)
+        d = ImageDraw.Draw(img)
     ang = -ROGAN_SWEEP + 2 * ROGAN_SWEEP * v
     px, py = math.sin(ang), -math.cos(ang)
-    d.line((r + px * rb * 0.52, r + py * rb * 0.52, r + px * rb * 0.86, r + py * rb * 0.86), fill=(0xf2, 0xf2, 0xf2), width=int(3.4 * SS))
+    d.line((r + px * rb * L["p0"], r + py * rb * L["p0"], r + px * rb * L["p1"], r + py * rb * L["p1"]), fill=L["tick"], width=int(3.2 * SS))
     return img
 
 
@@ -293,7 +304,7 @@ def knob_frames(page_img, c, nopts):
             v = round(v * (nopts - 1)) / float(nopts - 1)
         cell = base.copy()
         angle = -ROGAN_SWEEP + 2 * ROGAN_SWEEP * v
-        if TH["style"] == "hive":
+        if TH["knob"] in ("hive", "serum"):
             paste(cell, hive_knob(s, v), 0, 0)
             frames.append(down(cell, s, s))
             continue
@@ -309,11 +320,12 @@ def wheel_image(s):
     img = Image.new("RGBA", (s * SS, s * SS), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
     r = s * SS / 2
-    if TH["style"] == "hive":      # the same black cap, ring and white tick as the knobs; it turns a full revolution
-        d.ellipse((2.5 * SS, 2.5 * SS, s * SS - 2.5 * SS, s * SS - 2.5 * SS), fill=(0xb4, 0xb4, 0xb4))
-        d.ellipse((5 * SS, 5 * SS, s * SS - 5 * SS, s * SS - 5 * SS), fill=(0x0e, 0x0e, 0x0e))
-        d.ellipse((8 * SS, 8 * SS, s * SS - 8 * SS, s * SS - 8 * SS), fill=(0x1c, 0x1c, 0x1c))
-        d.line((r, 11 * SS, r, 26 * SS), fill=(0xf2, 0xf2, 0xf2), width=int(3.6 * SS))
+    if TH["knob"] in ("hive", "serum"):      # the same black cap, ring and white tick as the knobs; it turns a full revolution
+        L = TH["knob_look"]
+        d.ellipse((2.5 * SS, 2.5 * SS, s * SS - 2.5 * SS, s * SS - 2.5 * SS), fill=L["ring"])
+        d.ellipse((5 * SS, 5 * SS, s * SS - 5 * SS, s * SS - 5 * SS), fill=L["cap_o"])
+        d.ellipse((8 * SS, 8 * SS, s * SS - 8 * SS, s * SS - 8 * SS), fill=L["cap_i"])
+        d.line((r, 11 * SS, r, 26 * SS), fill=L["tick"], width=int(3.6 * SS))
         return img
     d.ellipse((0, 0, s * SS - 1, s * SS - 1), fill=(0x16, 0x16, 0x16))
     d.ellipse((3 * SS, 3 * SS, s * SS - 3 * SS, s * SS - 3 * SS), fill=(0x3a, 0x3a, 0x3a))
@@ -395,6 +407,19 @@ def button_image(w, h, s, fs, fill, ink, radius=3):
     img = Image.new("RGBA", (w * SS, h * SS), BG + (255,))
     d = ImageDraw.Draw(img)
     d.rounded_rectangle((0, 0, w * SS - 1, h * SS - 1), radius=radius * SS, fill=fill)
+    if TH["bevel"]:               # a lit top edge, a darker foot and a faint sheen (the Serum look)
+        lay = Image.new("RGBA", img.size, (0, 0, 0, 0))
+        ld = ImageDraw.Draw(lay)
+        for y in range(h * SS // 2):
+            ld.line((SS, y, w * SS - SS, y), fill=(255, 255, 255, int(20 * (1 - y / (h * SS / 2)))))
+        ld.rounded_rectangle((0, 0, w * SS - 1, h * SS - 1), radius=radius * SS, outline=(255, 255, 255, 46), width=SS)
+        ld.line((radius * SS, h * SS - SS, w * SS - radius * SS, h * SS - SS), fill=(0, 0, 0, 170), width=SS)
+        lay2 = Image.new("RGBA", img.size, (0, 0, 0, 0))
+        m = Image.new("L", img.size, 0)
+        ImageDraw.Draw(m).rounded_rectangle((0, 0, w * SS - 1, h * SS - 1), radius=radius * SS, fill=255)
+        lay2.paste(lay, (0, 0), m)
+        img.alpha_composite(lay2)
+        d = ImageDraw.Draw(img)
     lines = s.split("\n")
     lh = fs * 1.15
     for i, ln in enumerate(lines):
@@ -535,6 +560,31 @@ def find_sub(defn, ctype, name=None):
 
 
 # ------------------------------------------------------------------------------------------------ main
+def depth(page, t):
+    """the Serum look's depth: a faint light sheen falling from the top of every panel, a lit inner edge and a dark one,
+    and a shadow inside the top of every screen (all low-alpha, over the flat colours)"""
+    lay = Image.new("RGBA", page.size, (0, 0, 0, 0))
+    d = ImageDraw.Draw(lay)
+    for item in panel.ART[t]:
+        if item[0] == "frame":
+            _, x, y, w, h, _title = item
+            x0, y0, x1, y1 = (x + 2) * SS, (y + 2) * SS, (x + w - 2) * SS, (y + h - 2) * SS
+            span = int(min(h * SS, 160 * SS))
+            for i in range(span):
+                d.line((x0, y0 + i, x1, y0 + i), fill=(255, 255, 255, int(11 * (1 - i / span) ** 1.5)))
+            d.line((x0 + SS, y0 + SS, x1 - SS, y0 + SS), fill=(255, 255, 255, 34), width=SS)
+            d.line((x0 + SS, y0 + SS, x0 + SS, y1 - SS), fill=(255, 255, 255, 18), width=SS)
+            d.line((x0 + SS, y1 - SS, x1 - SS, y1 - SS), fill=(0, 0, 0, 120), width=SS)
+            d.line((x1 - SS, y0 + SS, x1 - SS, y1 - SS), fill=(0, 0, 0, 90), width=SS)
+        elif item[0] == "lcd":
+            _, x, y, w, h = item
+            for i in range(14 * SS):
+                d.line(((x + 2) * SS, (y + 2) * SS + i, (x + w - 2) * SS, (y + 2) * SS + i),
+                       fill=(0, 0, 0, int(120 * (1 - i / (14 * SS)) ** 1.6)))
+            d.line(((x + 4) * SS, (y + h - 1) * SS, (x + w - 4) * SS, (y + h - 1) * SS), fill=(255, 255, 255, 26), width=SS)
+    page.alpha_composite(lay)
+
+
 def build_page(sk, t):
     cs = panel.controls(t)
     page = Image.new("RGBA", (panel.W * SS, panel.H * SS), BG + (255,))
@@ -542,6 +592,9 @@ def build_page(sk, t):
     for item in panel.ART[t]:
         if item[0] in ("frame", "lcd", "line"):
             draw_art(d, item)
+    if TH["bevel"]:
+        depth(page, t)
+        d = ImageDraw.Draw(page)
     for c in cs:
         if c["kind"] == "slider":
             draw_slider_slot(page, c)

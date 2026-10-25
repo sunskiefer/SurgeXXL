@@ -31,17 +31,21 @@ from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import panel  # noqa: E402
+import theme  # noqa: E402
 
 ROOT = panel.ROOT
 SS = 2                      # draw this many times larger, then scale down
 MAX_STRIP = 12288
 FONT = os.path.join(ROOT, "art", "fonts", "TitilliumWeb-SemiBold.ttf")
-BG = panel.BG
-ORANGE = (0xf2, 0x9a, 0x2e)
-SEG_OFF = (0x1c, 0x1c, 0x1c)
-INK = (255, 255, 255)
-INK_DIM = (0xcf, 0xcf, 0xcf)
-VALUE_COLOUR = "ffcfcfcf"
+TH = theme.T
+BG = TH["bg"]
+ORANGE = TH["accent"]
+SEG_OFF = TH["seg_off"]
+INK = TH["ink"]
+INK_DIM = TH["ink_dim"]
+VALUE_COLOUR = TH["value"]
+BTN_OFF_INK = TH["seg_off_ink"]
+ACCENT_INK = TH["accent_ink"]
 VALUE_SIZE = 20             # live value text (0.3.0: the same size as every name)
 HEADER_SIZE = 20
 STRIP_SIZE = 20             # the per-type parameter names under sliders / knobs
@@ -116,20 +120,22 @@ def draw_art(d, item):
         tw = d.textlength(title, font=f) / SS
         tx = x + (w - tw) / 2 - 22
         d.rectangle((tx * SS, (y - 18) * SS, (tx + tw + 44) * SS, (y + 18) * SS), fill=INK)
-        d.text(((x + w / 2) * SS, y * SS), title, font=f, fill=(0x11, 0x11, 0x11), anchor="mm")
+        d.text(((x + w / 2) * SS, y * SS), title, font=f, fill=TH["tab_text"], anchor="mm")
     elif kind == "header":
         _, x, y, w, s = item
         text_at(d, x, y, w, s, HEADER_SIZE, INK, "left")
         d.rectangle((x * SS, (y + 28) * SS, (x + w) * SS, (y + 29) * SS - 1), fill=INK)
     elif kind == "text":
         _, x, y, w, s, size, colour, align = item
-        text_at(d, x, y, w, s, size, colour, align)
+        text_at(d, x, y, w, s, size, (TH["bg_text"] or {}).get(tuple(colour), colour), align)
     elif kind == "lcd":
         _, x, y, w, h = item
         d.rounded_rectangle((x * SS, y * SS, (x + w) * SS, (y + h) * SS), radius=4 * SS, fill=LCD_FILL,
                             outline=(0x0a, 0x0a, 0x0a), width=2 * SS)
     elif kind == "line":
         _, x, y, w, h, colour = item
+        if tuple(colour) == (0x3e, 0x3e, 0x3e):
+            colour = TH["line"]
         d.rectangle((x * SS, y * SS, (x + w) * SS - 1, (y + h) * SS - 1), fill=colour)
 
 
@@ -147,6 +153,11 @@ def draw_slider_slot(img, c):
     k = c["k"]
     bw, bh, hw, hh, hx = slider_geom(c)
     x, y = c["x"], c["y"]
+    if TH["style"] == "hive":      # HIVE 2: a slim dark track the cap runs on, no ticks
+        cx = x + hx + hw / 2
+        top, bot = y + (TRAVEL[0] + hh / (2 * k)) * k, y + (TRAVEL[1] + hh / (2 * k)) * k
+        d.rounded_rectangle(((cx - 3.5) * SS, (top - 6) * SS, (cx + 3.5) * SS, (bot + 6) * SS), radius=3.5 * SS, fill=(0x30, 0x30, 0x30))
+        return
     d.rounded_rectangle(((x + hx - 4) * SS, y * SS, (x + hx + hw + 4) * SS, (y + bh) * SS), radius=4 * SS,
                         fill=(0x1b, 0x1b, 0x1b))
     t0, t1 = (TRAVEL[0] + 14.95) * k, (TRAVEL[1] + 14.95) * k
@@ -189,12 +200,30 @@ def strip(frames):
     return out
 
 
+CAP_COLOURS = {"orange": ORANGE, "red": (0xd2, 0x3a, 0x2a), "yellow": (0xf2, 0xc8, 0x2e), "green": (0x4c, 0xc2, 0x5a),
+               "blue": (0x3a, 0x7c, 0xe0)}
+
+
+def hive_cap(hw, hh, colour):
+    """a HIVE-style fader cap: a flat dark rounded block with a light top edge and a line of the slider's colour"""
+    w, h = int(hw * 1.35 * SS), int(hh * 0.62 * SS)
+    cap = Image.new("RGBA", (int(hw * SS), int(hh * SS)), (0, 0, 0, 0))
+    d = ImageDraw.Draw(cap)
+    x0, y0 = (cap.size[0] - w) // 2, (cap.size[1] - h) // 2
+    d.rounded_rectangle((x0, y0, x0 + w, y0 + h), radius=3 * SS, fill=(0x3c, 0x3c, 0x3c), outline=(0x14, 0x14, 0x14), width=SS)
+    d.rectangle((x0 + 2 * SS, y0 + 2 * SS, x0 + w - 2 * SS, y0 + 4 * SS), fill=(0x5a, 0x5a, 0x5a))
+    d.rectangle((x0 + 3 * SS, y0 + h // 2 - SS, x0 + w - 3 * SS, y0 + h // 2 + SS), fill=CAP_COLOURS[colour])
+    return cap
+
+
 def slider_frames(page_img, c):
     bw, bh, hw, hh, hx = slider_geom(c)
     box = (c["x"], c["y"], bw, bh)
     base = crop(page_img, box)
     n = max(2, min(128, MAX_STRIP // int(bh)))
     handle = svg(art("valley", HANDLE[c["colour"]]), hw * SS, hh * SS)
+    if TH["style"] == "hive":
+        handle = hive_cap(hw, hh, c["colour"])
     frames = []
     for i in range(n):
         v = i / float(n - 1)
@@ -203,6 +232,34 @@ def slider_frames(page_img, c):
         paste(cell, handle, hx * SS, top * SS)
         frames.append(down(cell, bw, bh))
     return box, frames
+
+
+def hive_knob(s, v):
+    """a HIVE-style knob (drawn at SS): a black cap with a light pointer inside a thin track whose value arc is lit"""
+    img = Image.new("RGBA", (s * SS, s * SS), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    r = s * SS / 2
+    a0, a1 = -90 - math.degrees(ROGAN_SWEEP), -90 + math.degrees(ROGAN_SWEEP)
+    ring = (3 * SS, 3 * SS, s * SS - 3 * SS, s * SS - 3 * SS)
+    d.arc(ring, a0, a1, fill=(0xa8, 0xa8, 0xa8), width=int(3.2 * SS))
+    if v > 0.004:
+        d.arc(ring, a0, a0 + (a1 - a0) * v, fill=ORANGE, width=int(3.2 * SS))
+    rb = r * 0.70
+    d.ellipse((r - rb, r - rb, r + rb, r + rb), fill=(0x16, 0x16, 0x16))
+    d.ellipse((r - rb * 0.9, r - rb * 0.9, r + rb * 0.9, r + rb * 0.9), fill=(0x22, 0x22, 0x22))
+    ang = -ROGAN_SWEEP + 2 * ROGAN_SWEEP * v
+    px, py = math.sin(ang), -math.cos(ang)
+    d.line((r + px * rb * 0.25, r + py * rb * 0.25, r + px * rb * 0.82, r + py * rb * 0.82), fill=(0xf4, 0xf4, 0xf4), width=int(3 * SS))
+    return img
+
+
+def tint(layer):
+    """the knob cap in this theme's colours (the shading kept, the alpha kept)"""
+    lo, hi = TH["knob_tint"]
+    grey = ImageOps.autocontrast(layer.convert("L"))
+    out = ImageOps.colorize(grey, black=lo, white=hi).convert("RGBA")
+    out.putalpha(layer.getchannel("A"))
+    return out
 
 
 def knob_frames(page_img, c, nopts):
@@ -221,6 +278,10 @@ def knob_frames(page_img, c, nopts):
             v = round(v * (nopts - 1)) / float(nopts - 1)
         cell = base.copy()
         angle = -ROGAN_SWEEP + 2 * ROGAN_SWEEP * v
+        if TH["style"] == "hive":
+            paste(cell, hive_knob(s, v), 0, 0)
+            frames.append(down(cell, s, s))
+            continue
         paste(cell, layers[0], 0, 0)
         paste(cell, layers[1].rotate(-math.degrees(angle), resample=Image.BICUBIC), 0, 0)
         paste(cell, layers[2], 0, 0)
@@ -321,8 +382,8 @@ def button_image(w, h, s, fs, fill, ink, radius=3):
     return down(img, w, h)
 
 
-STYLES = {"dark": (SEG_OFF, INK_DIM, (0x3a, 0x3a, 0x3a), INK), "orange": (ORANGE, (17, 17, 17), (255, 196, 120), (17, 17, 17)),
-          "red": ((210, 58, 42), INK, (240, 96, 80), INK)}
+STYLES = {"dark": (SEG_OFF, BTN_OFF_INK, (0x3a, 0x3a, 0x3a), INK), "orange": (ORANGE, ACCENT_INK, (255, 196, 120), ACCENT_INK),
+          "red": ((210, 58, 42), (255, 255, 255), (240, 96, 80), (255, 255, 255))}
 
 
 # ------------------------------------------------------------------------------------------------ label strips
@@ -604,8 +665,8 @@ def build_page(sk, t):
         elif k == "seg":
             imgs = []
             for r, s in zip(c["rects"], c["texts"]):
-                imgs.append((button_image(r[2], r[3], s, c["fs"], SEG_OFF, INK_DIM),
-                             button_image(r[2], r[3], s, c["fs"], ORANGE, (17, 17, 17))))
+                imgs.append((button_image(r[2], r[3], s, c["fs"], SEG_OFF, BTN_OFF_INK),
+                             button_image(r[2], r[3], s, c["fs"], ORANGE, ACCENT_INK)))
             place_buttons(c, c["rects"], imgs)
         elif k == "button":
             fill, ink, fill_on, ink_on = STYLES[c["style"]]
@@ -702,7 +763,14 @@ def build_page(sk, t):
                 lab = find_sub(rdef, "Label")
                 ts = lab["componentData"]["data"]["textStyle"]
                 ts["font"]["height"] = float(c["size"])
-                ts["colour"] = "ff" + c["colour"]
+                col = c["colour"].lower()
+                if TH["bg_text"] and col in TH["bg_text"]:      # a light theme: lettering on the page (not on a dark display)
+                    cx_, cy_ = c["x"] + c["w"] / 2, c["y"] + c["h"] / 2
+                    over_lcd = any(i[0] == "lcd" and i[1] <= cx_ <= i[1] + i[3] and i[2] <= cy_ <= i[2] + i[4]
+                                   for i in panel.ART[t])
+                    if not over_lcd:
+                        col = TH["bg_text"][col]
+                ts["colour"] = "ff" + col
                 ts["justification"] = {"left": "centredLeft", "center": "horizontallyCentred verticallyCentred",
                                        "right": "centredRight"}[c["align"]]
                 sub_bounds(lab, 0, 0, c["w"], c["h"])
@@ -743,9 +811,9 @@ def restyle_popups(sk):
             btn = find_sub(d, "Button")
             w, h = [int(v) for v in btn["bounds"]["bounds"].split()[2:]]
             data = btn["componentData"]["data"]
-            data["offImage"] = sk.save(button_image(w, h, label, 20, SEG_OFF, INK_DIM),
+            data["offImage"] = sk.save(button_image(w, h, label, 20, SEG_OFF, BTN_OFF_INK),
                                        "sx_po_%s_%s_%s_off.png" % (tab, pkey, i))
-            data["onImage"] = sk.save(button_image(w, h, label, 20, ORANGE, (17, 17, 17)),
+            data["onImage"] = sk.save(button_image(w, h, label, 20, ORANGE, ACCENT_INK),
                                       "sx_po_%s_%s_%s_on.png" % (tab, pkey, i))
             n += 1
         elif key.startswith("shPopPanel_"):

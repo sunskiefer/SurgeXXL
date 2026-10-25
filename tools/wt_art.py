@@ -21,11 +21,13 @@ import gen_params  # noqa: E402
 
 ROOT = gen_params.ROOT
 DATA = os.path.join(ROOT, "third_party", "surge", "resources", "data")
-CACHE = os.path.join(ROOT, "build", "wt_art")
+CACHE = os.path.join(ROOT, "build", "wt_art" + ("" if os.environ.get("SXXL_SKIN", "dark") == "dark" else "_" + os.environ["SXXL_SKIN"]))
 FONT = os.path.join(ROOT, "art", "fonts", "TitilliumWeb-SemiBold.ttf")
 SS = 3
-LCD = (0x12, 0x12, 0x12)
-ORANGE = (0xfb, 0x90, 0x13)
+import theme  # noqa: E402
+LCD = theme.T["screen_fill"]            # the screen's colours follow the skin theme (tools/theme.py)
+ORANGE = theme.T["screen_ink"]
+DIM = theme.T["screen_dim"]
 _list = None
 
 
@@ -128,10 +130,10 @@ def generic(w, h):
     img = Image.new("RGB", (w * SS, h * SS), LCD)
     d = ImageDraw.Draw(img)
     f = ImageFont.truetype(FONT, 15 * SS)
-    d.line([(10 * SS, h * SS / 2), ((w - 10) * SS, h * SS / 2)], fill=(0x55, 0x33, 0x0c), width=2 * SS)
-    d.text((w * SS / 2, h * SS / 2 - 16 * SS), "NO PICTURE", font=f, fill=(0x80, 0x4c, 0x10), anchor="mm")
+    d.line([(10 * SS, h * SS / 2), ((w - 10) * SS, h * SS / 2)], fill=tuple(int(c * 0.55) for c in DIM), width=2 * SS)
+    d.text((w * SS / 2, h * SS / 2 - 16 * SS), "NO PICTURE", font=f, fill=DIM, anchor="mm")
     d.text((w * SS / 2, h * SS / 2 + 16 * SS), "user table / no wavetable", font=ImageFont.truetype(FONT, 11 * SS),
-           fill=(0x80, 0x4c, 0x10), anchor="mm")
+           fill=DIM, anchor="mm")
     return img
 
 

@@ -52,7 +52,7 @@ VALUE_SIZE = 20             # live value text (0.3.0: the same size as every nam
 HEADER_SIZE = 20
 STRIP_SIZE = 20             # the per-type parameter names under sliders / knobs
 KNOB_MAX = 96               # 128 frames of 96 px: the largest knob strip MPC animates right (docs/NOTES.md)
-LCD_FILL = (0x12, 0x12, 0x12)
+LCD_FILL = TH["screen_fill"]
 ROGAN_SWEEP = 0.83 * math.pi
 WT_PICTURES = os.environ.get("SXXL_WT_PICTURES", "1") != "0"
 
@@ -66,6 +66,15 @@ CKSS = ("CKSS_0.svg", "CKSS_1.svg")
 FADER_BOX = (40, 182)       # BAZZLINE's LEVEL slider box (art/bazzline/fader_box.png) and its channel inside it
 FADER_CHANNEL = (13, 16, 12, 151)
 THUMB = (14, 25)
+
+
+def screen_hex(h):
+    """lettering on a dark screen: the dark skin's orange becomes this theme's screen inks (8-digit AARRGGBB or 6-digit)"""
+    t = h.lower()
+    a, c = (t[:2], t[2:]) if len(t) == 8 else ("", t)
+    ink, dim = TH["screen_ink"], TH["screen_dim"]
+    c = {"fb9013": "%02x%02x%02x" % ink, "c97a1c": "%02x%02x%02x" % dim}.get(c, c)
+    return a + c
 
 
 def art(*p):
@@ -544,7 +553,7 @@ def build_page(sk, t):
                                 outline=(0x5a, 0x5a, 0x5a), width=2 * SS)
             mx, my = x + w - 20, y + h / 2
             d.polygon([((mx - 7) * SS, (my - 4) * SS), ((mx + 7) * SS, (my - 4) * SS), (mx * SS, (my + 5) * SS)],
-                      fill=ORANGE)
+                      fill=TH["screen_ink"])
     for item in panel.ART[t]:
         if item[0] in ("header", "text"):
             draw_art(d, item)
@@ -617,7 +626,7 @@ def build_page(sk, t):
         sub_bounds(film, x - ox0, y - oy0, w, h)
         comps.append(film)
         if vr:
-            colour = c.get("value_colour", VALUE_COLOUR)
+            colour = screen_hex(c.get("value_colour", VALUE_COLOUR))
             comps.append(label_comp("Value", vr[0] - ox0, vr[1] - oy0, vr[2], vr[3], colour, c.get("value_size", VALUE_SIZE)))
         key = "sx_%d_%s" % (t, c["key"])
         sk.add_def(key, comps, tmpl)
@@ -668,7 +677,7 @@ def build_page(sk, t):
             vr = None
             if c.get("lcd"):
                 vr = c["lcd"]
-                c["value_colour"], c["value_size"] = "fffb9013", 19
+                c["value_colour"], c["value_size"] = screen_hex("fffb9013"), 19
             place_film(c, box, frames, len(frames), vr)
         elif k in ("ckss", "lit"):
             box, (off, on) = ckss_images(page, c) if k == "ckss" else lit_images(page, c)
@@ -775,7 +784,7 @@ def build_page(sk, t):
                 lab = find_sub(rdef, "Label")
                 ts = lab["componentData"]["data"]["textStyle"]
                 ts["font"]["height"] = float(c["size"])
-                col = c["colour"].lower()
+                col = screen_hex(c["colour"].lower())
                 if TH["bg_text"] and col in TH["bg_text"]:      # a light theme: lettering on the page (not on a dark display)
                     cx_, cy_ = c["x"] + c["w"] / 2, c["y"] + c["h"] / 2
                     over_lcd = any(i[0] == "lcd" and i[1] <= cx_ <= i[1] + i[3] and i[2] <= cy_ <= i[2] + i[4]
@@ -832,13 +841,13 @@ def restyle_popups(sk):
             img = find_sub(d, "Image")
             w, h = [int(v) for v in img["bounds"]["bounds"].split()[2:]]
             pnl = Image.new("RGB", (w, h), (0x24, 0x24, 0x24))
-            ImageDraw.Draw(pnl).rectangle((0, 0, w - 1, h - 1), outline=ORANGE, width=2)
+            ImageDraw.Draw(pnl).rectangle((0, 0, w - 1, h - 1), outline=TH["pop_rim"], width=2)
             img["componentData"]["data"]["image"] = sk.save(pnl, "sx_pp_%s.png" % key[len("shPopPanel_"):])
         elif key.startswith("shPopField_"):
             lab = find_sub(d, "Label")
             if lab:
                 ts = lab["componentData"]["data"]["textStyle"]
-                ts["colour"], ts["font"]["height"] = "fffb9013", 26.0
+                ts["colour"], ts["font"]["height"] = screen_hex("fffb9013"), 26.0
     return n
 
 

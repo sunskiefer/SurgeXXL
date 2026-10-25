@@ -46,6 +46,8 @@ INK_DIM = TH["ink_dim"]
 VALUE_COLOUR = TH["value"]
 BTN_OFF_INK = TH["seg_off_ink"]
 ACCENT_INK = TH["accent_ink"]
+BTN_ON = TH["btn_on"]            # a lit button / the selected option
+BTN_ON_INK = TH["btn_on_ink"]
 VALUE_SIZE = 20             # live value text (0.3.0: the same size as every name)
 HEADER_SIZE = 20
 STRIP_SIZE = 20             # the per-type parameter names under sliders / knobs
@@ -156,7 +158,7 @@ def draw_slider_slot(img, c):
     if TH["style"] == "hive":      # HIVE 2: a slim dark track the cap runs on, no ticks
         cx = x + hx + hw / 2
         top, bot = y + (TRAVEL[0] + hh / (2 * k)) * k, y + (TRAVEL[1] + hh / (2 * k)) * k
-        d.rounded_rectangle(((cx - 3.5) * SS, (top - 6) * SS, (cx + 3.5) * SS, (bot + 6) * SS), radius=3.5 * SS, fill=(0x30, 0x30, 0x30))
+        d.rounded_rectangle(((cx - 5.5) * SS, (top - 8) * SS, (cx + 5.5) * SS, (bot + 8) * SS), radius=5.5 * SS, fill=(0xb8, 0xb8, 0xb8))
         return
     d.rounded_rectangle(((x + hx - 4) * SS, y * SS, (x + hx + hw + 4) * SS, (y + bh) * SS), radius=4 * SS,
                         fill=(0x1b, 0x1b, 0x1b))
@@ -205,14 +207,12 @@ CAP_COLOURS = {"orange": ORANGE, "red": (0xd2, 0x3a, 0x2a), "yellow": (0xf2, 0xc
 
 
 def hive_cap(hw, hh, colour):
-    """a HIVE-style fader cap: a flat dark rounded block with a light top edge and a line of the slider's colour"""
-    w, h = int(hw * 1.35 * SS), int(hh * 0.62 * SS)
+    """a HIVE-style fader cap: a thin flat bar a little wider than the track"""
+    w, h = int(hw * 1.45 * SS), int(hh * 0.12 * SS)
     cap = Image.new("RGBA", (int(hw * SS), int(hh * SS)), (0, 0, 0, 0))
     d = ImageDraw.Draw(cap)
     x0, y0 = (cap.size[0] - w) // 2, (cap.size[1] - h) // 2
-    d.rounded_rectangle((x0, y0, x0 + w, y0 + h), radius=3 * SS, fill=(0x3c, 0x3c, 0x3c), outline=(0x14, 0x14, 0x14), width=SS)
-    d.rectangle((x0 + 2 * SS, y0 + 2 * SS, x0 + w - 2 * SS, y0 + 4 * SS), fill=(0x5a, 0x5a, 0x5a))
-    d.rectangle((x0 + 3 * SS, y0 + h // 2 - SS, x0 + w - 3 * SS, y0 + h // 2 + SS), fill=CAP_COLOURS[colour])
+    d.rounded_rectangle((x0, y0, x0 + w, y0 + h), radius=2 * SS, fill=(0x20, 0x20, 0x20))
     return cap
 
 
@@ -229,27 +229,33 @@ def slider_frames(page_img, c):
         v = i / float(n - 1)
         cell = base.copy()
         top = (TRAVEL[1] + (TRAVEL[0] - TRAVEL[1]) * v) * c["k"]
+        if TH["style"] == "hive":     # the lit part of the track, from the foot up to the cap
+            cxs = (hx + hw / 2) * SS
+            mid = (top + hh / 2) * SS
+            foot = (TRAVEL[1] * c["k"] + hh / 2 + 8) * SS
+            fc = CAP_COLOURS[c["colour"]] if c["colour"] in ("red", "yellow", "green", "blue") else (0x2e, 0x2e, 0x2e)
+            ImageDraw.Draw(cell).rounded_rectangle((cxs - 5.5 * SS, mid, cxs + 5.5 * SS, foot), radius=5.5 * SS, fill=fc)
         paste(cell, handle, hx * SS, top * SS)
         frames.append(down(cell, bw, bh))
     return box, frames
 
 
 def hive_knob(s, v):
-    """a HIVE-style knob (drawn at SS): a black cap with a light pointer inside a thin track whose value arc is lit"""
+    """a HIVE-style knob (drawn at SS): a black cap with a thin ring, a short white tick at its rim for the value"""
     img = Image.new("RGBA", (s * SS, s * SS), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
     r = s * SS / 2
     a0, a1 = -90 - math.degrees(ROGAN_SWEEP), -90 + math.degrees(ROGAN_SWEEP)
-    ring = (3 * SS, 3 * SS, s * SS - 3 * SS, s * SS - 3 * SS)
-    d.arc(ring, a0, a1, fill=(0xa8, 0xa8, 0xa8), width=int(3.2 * SS))
+    ring = (2.5 * SS, 2.5 * SS, s * SS - 2.5 * SS, s * SS - 2.5 * SS)
+    d.arc(ring, a0, a1, fill=(0xb4, 0xb4, 0xb4), width=int(2.4 * SS))
     if v > 0.004:
-        d.arc(ring, a0, a0 + (a1 - a0) * v, fill=ORANGE, width=int(3.2 * SS))
-    rb = r * 0.70
-    d.ellipse((r - rb, r - rb, r + rb, r + rb), fill=(0x16, 0x16, 0x16))
-    d.ellipse((r - rb * 0.9, r - rb * 0.9, r + rb * 0.9, r + rb * 0.9), fill=(0x22, 0x22, 0x22))
+        d.arc(ring, a0, a0 + (a1 - a0) * v, fill=(0x3a, 0x3a, 0x3a), width=int(2.4 * SS))
+    rb = r * 0.80
+    d.ellipse((r - rb, r - rb, r + rb, r + rb), fill=(0x0e, 0x0e, 0x0e))
+    d.ellipse((r - rb * 0.93, r - rb * 0.93, r + rb * 0.93, r + rb * 0.93), fill=(0x1c, 0x1c, 0x1c))
     ang = -ROGAN_SWEEP + 2 * ROGAN_SWEEP * v
     px, py = math.sin(ang), -math.cos(ang)
-    d.line((r + px * rb * 0.25, r + py * rb * 0.25, r + px * rb * 0.82, r + py * rb * 0.82), fill=(0xf4, 0xf4, 0xf4), width=int(3 * SS))
+    d.line((r + px * rb * 0.52, r + py * rb * 0.52, r + px * rb * 0.86, r + py * rb * 0.86), fill=(0xf2, 0xf2, 0xf2), width=int(3.4 * SS))
     return img
 
 
@@ -294,6 +300,12 @@ def wheel_image(s):
     img = Image.new("RGBA", (s * SS, s * SS), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
     r = s * SS / 2
+    if TH["style"] == "hive":      # the same black cap, ring and white tick as the knobs; it turns a full revolution
+        d.ellipse((2.5 * SS, 2.5 * SS, s * SS - 2.5 * SS, s * SS - 2.5 * SS), fill=(0xb4, 0xb4, 0xb4))
+        d.ellipse((5 * SS, 5 * SS, s * SS - 5 * SS, s * SS - 5 * SS), fill=(0x0e, 0x0e, 0x0e))
+        d.ellipse((8 * SS, 8 * SS, s * SS - 8 * SS, s * SS - 8 * SS), fill=(0x1c, 0x1c, 0x1c))
+        d.line((r, 11 * SS, r, 26 * SS), fill=(0xf2, 0xf2, 0xf2), width=int(3.6 * SS))
+        return img
     d.ellipse((0, 0, s * SS - 1, s * SS - 1), fill=(0x16, 0x16, 0x16))
     d.ellipse((3 * SS, 3 * SS, s * SS - 3 * SS, s * SS - 3 * SS), fill=(0x3a, 0x3a, 0x3a))
     d.ellipse((8 * SS, 8 * SS, s * SS - 8 * SS, s * SS - 8 * SS), fill=(0x24, 0x24, 0x24))
@@ -382,7 +394,7 @@ def button_image(w, h, s, fs, fill, ink, radius=3):
     return down(img, w, h)
 
 
-STYLES = {"dark": (SEG_OFF, BTN_OFF_INK, (0x3a, 0x3a, 0x3a), INK), "orange": (ORANGE, ACCENT_INK, (255, 196, 120), ACCENT_INK),
+STYLES = {"dark": (SEG_OFF, BTN_OFF_INK, (0x3a, 0x3a, 0x3a), INK), "orange": (BTN_ON, BTN_ON_INK, (255, 196, 120), BTN_ON_INK),
           "red": ((210, 58, 42), (255, 255, 255), (240, 96, 80), (255, 255, 255))}
 
 
@@ -646,7 +658,7 @@ def build_page(sk, t):
             box, frames = wheel_frames(page, c)
             place_film(c, box, frames, len(frames) - 1, value_rect(c, box))
         elif k == "tbtn":
-            fill, ink, fill_on, ink_on = STYLES["dark"][0], STYLES["dark"][1], ORANGE, (17, 17, 17)
+            fill, ink, fill_on, ink_on = STYLES["dark"][0], STYLES["dark"][1], BTN_ON, BTN_ON_INK
             off = button_image(c["w"], c["h"], c["text"], c["fs"], fill, ink)
             on = button_image(c["w"], c["h"], c["text"], c["fs"], fill_on, ink_on)
             placed[c["key"]] = ("switch", (sk.save(off, "sx_%d_%s_off.png" % (t, c["key"])),
@@ -666,7 +678,7 @@ def build_page(sk, t):
             imgs = []
             for r, s in zip(c["rects"], c["texts"]):
                 imgs.append((button_image(r[2], r[3], s, c["fs"], SEG_OFF, BTN_OFF_INK),
-                             button_image(r[2], r[3], s, c["fs"], ORANGE, ACCENT_INK)))
+                             button_image(r[2], r[3], s, c["fs"], BTN_ON, BTN_ON_INK)))
             place_buttons(c, c["rects"], imgs)
         elif k == "button":
             fill, ink, fill_on, ink_on = STYLES[c["style"]]
@@ -813,7 +825,7 @@ def restyle_popups(sk):
             data = btn["componentData"]["data"]
             data["offImage"] = sk.save(button_image(w, h, label, 20, SEG_OFF, BTN_OFF_INK),
                                        "sx_po_%s_%s_%s_off.png" % (tab, pkey, i))
-            data["onImage"] = sk.save(button_image(w, h, label, 20, ORANGE, ACCENT_INK),
+            data["onImage"] = sk.save(button_image(w, h, label, 20, BTN_ON, BTN_ON_INK),
                                       "sx_po_%s_%s_%s_on.png" % (tab, pkey, i))
             n += 1
         elif key.startswith("shPopPanel_"):
